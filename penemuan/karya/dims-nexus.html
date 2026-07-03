@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIMS Nexus · Arsip Karya PT DIMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>:root{ --accent:#f59e0b; }</style>
+</head>
+<body data-accent="#f59e0b">
+  <div class="wrap">
+    <nav class="detail-nav">
+      <a class="back-btn" href="../index.html" data-transition>← semua karya</a>
+      <span class="brand"><b>PT DIMS</b> · ARSIP</span>
+    </nav>
+  </div>
+
+  <header class="hero wrap">
+    <div class="h-icon">🌀</div>
+    <h1>DIMS Nexus</h1>
+    <p class="tagline">Satu wajah, tiga otak — pusat kendali yang menyatukan PT DIMS, Claude, dan BlackBox.</p>
+    <div class="badges">
+      <span class="badge status"><i></i>Demo</span>
+      <span class="badge accent">arsip #04</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section story">
+      <div class="s-label">Cerita</div>
+      <p>DIMS Nexus adalah <strong>pusat kendali</strong> bergaya sci-fi: sebuah <strong>otak 3D</strong> yang berdenyut di tengah, dikelilingi panel melayang dan partikel hidup — dirender penuh dengan <strong>Three.js / WebGL</strong>.</p>
+      <p>Keistimewaannya: satu wajah, <strong>tiga pikiran</strong>. Gosok logo otaknya sampai <em>klimaks</em> (partikel meledak + dentuman), lalu kesadarannya berpindah — <strong>PT DIMS lokal (biru)</strong> → <strong>Claude (oranye)</strong> → <strong>BlackBox (ungu)</strong>. Tiap otak punya warna, kepribadian, dan perannya sendiri: lokal untuk yang berdaulat, Claude untuk kualitas penuh, BlackBox untuk urusan engineering. Model cloud otomatis muncul sebagai pilihan hanya bila CLI-nya tersedia.</p>
+      <p>Kendalinya tanpa sentuh: lewat <strong>MediaPipe Hands</strong>, tangan di depan webcam jadi alat penunjuk (tombol 🖐️ mengaktifkan mode gestur). Nexus juga bisa <em>melihat</em> (kirim gambar + pertanyaan ke <code>/vision</code>), <em>mendengar</em> dan <em>bicara</em> (suara via <code>/voice</code> &amp; <code>/listen</code>) — semuanya nyambung ke otak agent di <code>router.py</code>.</p>
+      <p>Dikemas jadi satu aplikasi desktop (<strong>.exe</strong> di Desktop) — antarmuka tunggal untuk memanggil otak mana pun yang kamu butuh.</p>
+
+    </section>
+
+    <section class="section">
+      <div class="s-label">Video</div>
+      <div class="video-shell">
+        <video class="karya-video" controls preload="metadata"
+               poster="../assets/media/dims-nexus/Cuplikan%20layar%202026-07-02%20224026.png"
+               data-hint="taruh video (.mp4) di folder: assets/media/dims-nexus/">
+          <source src="../assets/media/dims-nexus/0702%20%283%29.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Cuplikan Layar</div>
+      <div class="gallery">
+        <figure><img class="shot" src="../assets/media/dims-nexus/Cuplikan%20layar%202026-07-02%20224026.png" alt="DIMS Nexus — cuplikan 1" data-hint="media/dims-nexus/Cuplikan layar 2026-07-02 224026.png"><figcaption>Cuplikan 1</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/dims-nexus/Cuplikan%20layar%202026-07-02%20224152.png" alt="DIMS Nexus — cuplikan 2" data-hint="media/dims-nexus/Cuplikan layar 2026-07-02 224152.png"><figcaption>Cuplikan 2</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/dims-nexus/Cuplikan%20layar%202026-07-02%20224238.png" alt="DIMS Nexus — cuplikan 3" data-hint="media/dims-nexus/Cuplikan layar 2026-07-02 224238.png"><figcaption>Cuplikan 3</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/dims-nexus/Cuplikan%20layar%202026-07-02%20224327.png" alt="DIMS Nexus — cuplikan 4" data-hint="media/dims-nexus/Cuplikan layar 2026-07-02 224327.png"><figcaption>Cuplikan 4</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Fitur Unggulan</div>
+      <div class="feat-grid">
+        <div class="feat"><h3>Tiga otak, satu wajah</h3><p>Gosok logo → ledakan → pindah kesadaran: PT DIMS lokal, Claude, BlackBox — masing-masing warna &amp; peran.</p></div>
+        <div class="feat"><h3>Kendali gestur</h3><p>Tangan di depan webcam mengontrol HUD tanpa sentuh (MediaPipe Hands).</p></div>
+        <div class="feat"><h3>Otak 3D hidup</h3><p>Otak berdenyut + partikel, dirender Three.js / WebGL.</p></div>
+        <div class="feat"><h3>Bisa melihat</h3><p>Kirim gambar + pertanyaan ke endpoint vision untuk dianalisis.</p></div>
+        <div class="feat"><h3>Suara dua arah</h3><p>Dengar perintah &amp; balas dengan suara, tersambung ke agent lokal.</p></div>
+        <div class="feat"><h3>Dikemas .exe</h3><p>Satu aplikasi desktop — panggil otak mana pun yang dibutuhkan.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Teknologi</div>
+      <div class="chips">
+        <span class="chip">Three.js</span>
+        <span class="chip">WebGL</span>
+        <span class="chip">MediaPipe Hands</span>
+        <span class="chip">JavaScript</span>
+        <span class="chip">router.py (/cmd /voice /vision)</span>
+        <span class="chip">pywebview .exe</span>
+      </div>
+    </section>
+
+    <nav class="pager">
+      <a href="vr-avatar.html" data-transition data-accent="#a78bfa">← VR Avatar</a>
+      <a href="cheat-engine.html" data-transition data-accent="#fb7185">Cheat Engine →</a>
+    </nav>
+  </main>
+
+  <footer class="site-foot wrap">
+    ARSIP KARYA · PT DIMS — <a href="../index.html" data-transition>kembali ke daftar</a>
+  </footer>
+
+  <script src="../assets/js/detail.js"></script>
+</body>
+</html>

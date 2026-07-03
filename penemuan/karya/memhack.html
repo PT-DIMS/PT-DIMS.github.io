@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MemHack · Arsip Karya PT DIMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>:root{ --accent:#e879f9; }</style>
+</head>
+<body data-accent="#e879f9">
+  <div class="wrap">
+    <nav class="detail-nav">
+      <a class="back-btn" href="../index.html" data-transition>← semua karya</a>
+      <span class="brand"><b>PT DIMS</b> · ARSIP</span>
+    </nav>
+  </div>
+
+  <header class="hero wrap">
+    <div class="h-icon">🧬</div>
+    <h1>MemHack</h1>
+    <p class="tagline">Cheat Engine mini yang dikemudikan langsung oleh Claude.</p>
+    <div class="badges">
+      <span class="badge status"><i></i>Selesai · dikendalikan AI</span>
+      <span class="badge accent">arsip #06</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section story">
+      <div class="s-label">Cerita</div>
+      <p>MemHack adalah <strong>alat bedah memori proses</strong> yang membaca dan menulis RAM game secara langsung lewat <strong>ctypes</strong> — memanggil <code>ReadProcessMemory</code> / <code>WriteProcessMemory</code> Win32 tanpa perantara. Alurnya persis Cheat Engine: <strong>scan</strong> sebuah nilai (misal health), <strong>ubah</strong> di dalam game, lalu <strong>scan ulang</strong> berkali-kali sampai ribuan kandidat menyusut jadi satu alamat. Bedanya, ia tak punya jendela, tombol, atau menu — hanya perintah teks.</p>
+      <p>Dan justru <em>ketiadaan GUI</em> itulah senjata rahasianya. Cheat Engine adalah alat manusia: ia butuh mata yang membaca daftar, tangan yang mengeklik <em>Next Scan</em>. MemHack dirancang agar <strong>otak yang mengemudikannya adalah AI</strong> — setiap langkah bedah memori diringkas jadi satu perintah CLI, sehingga <strong>Claude bisa menjalankannya sendiri</strong>: menyuruh <code>scan</code>, membaca hasil <code>list</code>, memutuskan <code>next</code>, lalu <code>freeze</code> — tanpa satu klik pun dari manusia. Inilah yang bikin ia terasa <em>lebih OP</em> dari Cheat Engine biasa: bukan alat yang kamu pakai, tapi alat yang <strong>dijalankan agen otomatis</strong> yang tak pernah lelah atau salah baca.</p>
+      <p>Ada alasan teknis kenapa harus begini. Cheat Engine yang berjalan sebagai <strong>Administrator</strong> justru <strong>memblokir otomasi</strong> lewat proteksi <strong>UIPI</strong> (User Interface Privilege Isolation) Windows — pesan mouse/keyboard sintetis dari proses ber-privilese lebih rendah ditolak, jadi AI tak bisa mengeklik GUI-nya. MemHack menembus tembok itu dengan menjadi <strong>CLI murni</strong>: tak ada UI untuk diproteksi, semua lewat <code>stdin/stdout</code> teks yang bebas dibaca dan ditulis Claude.</p>
+      <p>Kunci agar bisa dikemudikan per-perintah: MemHack <strong>menyimpan state antar-eksekusi</strong>. PID target dan seluruh daftar kandidat alamat disimpan ke disk, jadi tiap langkah bisa dijalankan sebagai perintah terpisah — <code>attach game.exe</code>, <code>scan 100</code>, <code>next 80</code>, <code>list</code>, <code>set 0x1A2B3C 999</code> — persis pola yang bisa dirangkai sebuah agen. Untuk nilai yang tak diketahui angkanya (seperti bar HP tanpa angka), ada <strong>unknown-scan</strong>: <code>scan unknown</code> lalu persempit dengan <code>next dec</code> (nilai turun) / <code>next inc</code> setiap kali kondisi berubah.</p>
+      <p>Teknik kelas-berat pun ikut: <strong>rantai pointer</strong> agar alamat tetap ketemu walau game di-restart — <code>mods</code> mendaftar modul + base address statis, <code>pscan</code> mencari rantai pointer, <code>presolve</code> menyelesaikannya jadi alamat nyata, dan <code>pfreeze</code> mengunci lewat rantai itu (setara Cheat Engine langkah 6–8). Ditutup <code>freeze</code> yang mengunci nilai dalam loop tulis. Hasil akhirnya: sebuah pisau bedah memori yang cukup diberi tujuan — <em>"bikin skor tak turun"</em> — lalu <strong>Claude yang menuntaskan sisanya sendiri</strong>.</p>
+      <div class="note"><b>Catatan</b><span>Kembaran <b>Cheat Engine</b> (alat manusia) versi CLI yang dijalankan AI. Untuk game <b>OFFLINE</b> / single-player &amp; belajar cara kerja memori — bukan untuk curang di game online.</span></div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Video</div>
+      <div class="video-shell">
+        <video class="karya-video" controls preload="metadata"
+               poster="../assets/media/memhack/cover.png"
+               data-hint="taruh video (.mp4) di folder: assets/media/memhack/">
+          <source src="../assets/media/memhack/video.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Cuplikan Layar</div>
+      <div class="gallery">
+        <figure><img class="shot" src="../assets/media/memhack/shot1-game.png" alt="MemHack — cuplikan 1" data-hint="media/memhack/shot1-game.png"><figcaption>Cuplikan 1</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/memhack/shot2-cli.png" alt="MemHack — cuplikan 2" data-hint="media/memhack/shot2-cli.png"><figcaption>Cuplikan 2</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/memhack/shot3-code.png" alt="MemHack — cuplikan 3" data-hint="media/memhack/shot3-code.png"><figcaption>Cuplikan 3</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Fitur Unggulan</div>
+      <div class="feat-grid">
+        <div class="feat"><h3>Dikemudikan Claude</h3><p>Tiap langkah bedah memori jadi satu perintah teks — AI yang scan, memutuskan, dan mengunci sendiri, tanpa klik manusia.</p></div>
+        <div class="feat"><h3>Lolos UIPI</h3><p>Sebagai CLI murni, menembus proteksi Windows yang memblokir otomasi terhadap GUI Cheat Engine ber-Admin.</p></div>
+        <div class="feat"><h3>State antar-perintah</h3><p>PID + daftar kandidat disimpan ke disk, jadi tiap langkah bisa dirangkai sebuah agen sebagai perintah terpisah.</p></div>
+        <div class="feat"><h3>Unknown-scan</h3><p>Cari nilai tanpa tahu angkanya (scan unknown → next dec/inc) — buat HP bar tanpa angka.</p></div>
+        <div class="feat"><h3>Rantai pointer</h3><p>mods, pscan, presolve, dan pfreeze untuk alamat stabil antar-restart (setara CE langkah 6–8).</p></div>
+        <div class="feat"><h3>Freeze &amp; set</h3><p>Tulis langsung ke alamat dan kunci nilai dalam loop — HP / amunisi / skor tak berubah.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Teknologi</div>
+      <div class="chips">
+        <span class="chip">Python</span>
+        <span class="chip">ctypes</span>
+        <span class="chip">Win32 API</span>
+        <span class="chip">ReadProcessMemory / WriteProcessMemory</span>
+        <span class="chip">State persist (JSON)</span>
+        <span class="chip">Dikemudikan Claude (CLI)</span>
+      </div>
+    </section>
+
+    <nav class="pager">
+      <a href="cheat-engine.html" data-transition data-accent="#fb7185">← Cheat Engine</a>
+      <a href="arg-dimensi.html" data-transition data-accent="#dc2626">ARG "Dimensi" →</a>
+    </nav>
+  </main>
+
+  <footer class="site-foot wrap">
+    ARSIP KARYA · PT DIMS — <a href="../index.html" data-transition>kembali ke daftar</a>
+  </footer>
+
+  <script src="../assets/js/detail.js"></script>
+</body>
+</html>

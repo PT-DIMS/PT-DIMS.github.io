@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent AI Lokal · Arsip Karya PT DIMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>:root{ --accent:#22d3ee; }</style>
+</head>
+<body data-accent="#22d3ee">
+  <div class="wrap">
+    <nav class="detail-nav">
+      <a class="back-btn" href="../index.html" data-transition>← semua karya</a>
+      <span class="brand"><b>PT DIMS</b> · ARSIP</span>
+    </nav>
+  </div>
+
+  <header class="hero wrap">
+    <div class="h-icon">🧠</div>
+    <h1>Agent AI Lokal</h1>
+    <p class="tagline">Otak dua-model yang berpikir 100% di mesin sendiri.</p>
+    <div class="badges">
+      <span class="badge status"><i></i>Aktif · eval 141/141</span>
+      <span class="badge accent">arsip #01</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section story">
+      <div class="s-label">Cerita</div>
+      <p>Agent AI Lokal lahir dari satu prinsip: <strong>kecerdasan yang berdaulat</strong>. Seluruh inferensi berjalan lewat <strong>Ollama</strong> (server model di <code>localhost:11434</code>) di mesin sendiri — tak ada satu token pun yang bocor ke cloud. Di intinya, <code>router.py</code> bertindak sebagai <em>otak</em>: ia memilih model yang tepat untuk tiap tugas, lalu menjalankan <strong>agentic loop</strong> (tool-calling) dengan lapisan keandalan berupa retry, timeout adaptif, dan circuit-breaker.</p>
+      <p>Otaknya bukan satu model, melainkan sebuah <strong>tim model spesialis</strong> yang di-orkestrasi: <code>qwen3.6</code> untuk obrolan &amp; penalaran umum, <code>qwen3-coder</code> untuk urusan kode, <code>qwen2.5vl</code> untuk penglihatan (membaca layar/gambar), dan <code>nomic-embed-text</code> untuk mengubah teks jadi vektor — dipakai memory jangka panjang (recall via cosine similarity) dan knowledge base <strong>RAG</strong> lokal. Router bisa dijalankan dalam beberapa mode kolaborasi: <em>orchestrate</em>, <em>pipeline</em>, <em>parallel</em>, dan <em>review</em>.</p>
+      <p>Untuk mata ke dunia luar, agen memakai <strong>SearXNG</strong> yang berjalan di dalam <strong>Docker</strong> (kontainer sendiri, port 8888, <em>restart unless-stopped</em>). Mesin pencarinya di-<em>hardening</em>: reformulasi query, multi-query, lalu sintesis jawaban — dengan fallback otomatis ke Wikipedia bila perlu. Docker juga dipakai sebagai <strong>backend eksekusi disposable</strong>: <code>run_shell</code>, <code>run_python</code>, dan <code>run_file</code> bisa dijalankan di kontainer sekali-pakai (jaringan <code>none</code> secara default) — bisa <code>debian-slim</code>, <code>python-slim</code>, sampai <code>kali-rolling</code> untuk perkakas red-team.</p>
+      <p>Di atas semua itu berdiri <strong>39 tool nyata</strong> (file, web, sistem, proses, media) yang dijaga <em>safety gate</em> + audit, serta keamanan berlapis <strong>Fase 1–4 + T2</strong>: aturan main (RoE) dengan scope engagement, mode blue-team, penjaga anti-injeksi, kontrol egress, hingga pelaporan otomatis. Semua aksi tercatat lewat <em>observability</em> (span/event → <code>trace.jsonl</code>, dashboard monitor, audit tool berisiko).</p>
+      <p>Ia bahkan punya wajah: <strong>J.A.R.V.I.S</strong> — HUD WebGL yang dibungkus <em>pywebview</em>, lengkap dengan suara (STT <code>faster-whisper</code> + TTS <code>Edge-TTS</code>) dan penglihatan. Hasil akhirnya: asisten operasional keamanan yang bisa dipercaya untuk latihan red &amp; blue team — lulus <strong>141 dari 141 eval</strong> regresi, dan tersimpan rapi di repo privat.</p>
+
+    </section>
+
+    <section class="section">
+      <div class="s-label">Video</div>
+      <div class="video-shell">
+        <video class="karya-video" controls preload="metadata"
+               poster="../assets/media/agent-ai/Cuplikan%20layar%202026-07-02%20015348.png"
+               data-hint="taruh video (.mp4) di folder: assets/media/agent-ai/">
+          <source src="../assets/media/agent-ai/0702.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Cuplikan Layar</div>
+      <div class="gallery">
+        <figure><img class="shot" src="../assets/media/agent-ai/Cuplikan%20layar%202026-07-02%20015348.png" alt="Agent AI Lokal — cuplikan 1" data-hint="media/agent-ai/Cuplikan layar 2026-07-02 015348.png"><figcaption>Cuplikan 1</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/agent-ai/Cuplikan%20layar%202026-07-02%20015524.png" alt="Agent AI Lokal — cuplikan 2" data-hint="media/agent-ai/Cuplikan layar 2026-07-02 015524.png"><figcaption>Cuplikan 2</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/agent-ai/Cuplikan%20layar%202026-07-02%20015656.png" alt="Agent AI Lokal — cuplikan 3" data-hint="media/agent-ai/Cuplikan layar 2026-07-02 015656.png"><figcaption>Cuplikan 3</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/agent-ai/Cuplikan%20layar%202026-07-02%20020059.png" alt="Agent AI Lokal — cuplikan 4" data-hint="media/agent-ai/Cuplikan layar 2026-07-02 020059.png"><figcaption>Cuplikan 4</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Fitur Unggulan</div>
+      <div class="feat-grid">
+        <div class="feat"><h3>Tim model spesialis</h3><p>qwen3.6 (chat), qwen3-coder (kode), qwen2.5vl (vision), nomic-embed (vektor) di-orkestrasi satu router.</p></div>
+        <div class="feat"><h3>Agentic loop + 39 tool</h3><p>Tool-calling nyata (file/web/sistem/proses) dengan safety gate, audit, retry &amp; circuit-breaker.</p></div>
+        <div class="feat"><h3>SearXNG + Docker</h3><p>Search lokal ter-hardening (reformulasi, multi-query, sintesis) plus eksekusi kode di kontainer disposable.</p></div>
+        <div class="feat"><h3>Memory &amp; RAG lokal</h3><p>Ingatan jangka panjang + knowledge base, recall via embedding nomic-embed-text.</p></div>
+        <div class="feat"><h3>Keamanan berlapis</h3><p>RoE + scope, blue-mode, anti-injeksi, dan kontrol egress bawaan (Fase 1–4 + T2).</p></div>
+        <div class="feat"><h3>100% lokal</h3><p>Tanpa cloud — semua inferensi &amp; data tetap di dalam mesin sendiri.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Teknologi</div>
+      <div class="chips">
+        <span class="chip">Python 3.14</span>
+        <span class="chip">Ollama</span>
+        <span class="chip">qwen3.6</span>
+        <span class="chip">qwen3-coder</span>
+        <span class="chip">qwen2.5vl (vision)</span>
+        <span class="chip">nomic-embed-text</span>
+        <span class="chip">SearXNG</span>
+        <span class="chip">Docker</span>
+        <span class="chip">RAG + embedding memory</span>
+        <span class="chip">faster-whisper</span>
+        <span class="chip">Edge-TTS</span>
+        <span class="chip">pywebview HUD</span>
+      </div>
+    </section>
+
+    <nav class="pager">
+      <a class="disabled">←</a>
+      <a href="hand-cursor.html" data-transition data-accent="#34d399">Hand Cursor →</a>
+    </nav>
+  </main>
+
+  <footer class="site-foot wrap">
+    ARSIP KARYA · PT DIMS — <a href="../index.html" data-transition>kembali ke daftar</a>
+  </footer>
+
+  <script src="../assets/js/detail.js"></script>
+</body>
+</html>

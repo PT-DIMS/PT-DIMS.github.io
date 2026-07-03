@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VR Avatar · Arsip Karya PT DIMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>:root{ --accent:#a78bfa; }</style>
+</head>
+<body data-accent="#a78bfa">
+  <div class="wrap">
+    <nav class="detail-nav">
+      <a class="back-btn" href="../index.html" data-transition>← semua karya</a>
+      <span class="brand"><b>PT DIMS</b> · ARSIP</span>
+    </nav>
+  </div>
+
+  <header class="hero wrap">
+    <div class="h-icon">🕶️</div>
+    <h1>VR Avatar</h1>
+    <p class="tagline">Masuk ke ruang VR, kendalikan desktop asli dari dalam.</p>
+    <div class="badges">
+      <span class="badge status"><i></i>Aktif</span>
+      <span class="badge accent">arsip #03</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section story">
+      <div class="s-label">Cerita</div>
+      <p>VR Avatar menempatkanmu di dalam sebuah studio 3D. Webcam melacak wajah lewat <strong>MediaPipe FaceMesh</strong> dan tangan lewat <strong>MediaPipe Hands</strong>, lalu dirender oleh <strong>Three.js</strong> menjadi avatar bergaya <strong>Roblox</strong> — kepala menoleh, mulut &amp; alis ikut bergerak, tangan hidup. Wujudnya dimuat dari model <code>.glb</code> (kepala Roblox + rambut bertanduk) via <em>GLTFLoader</em>, semua mengikuti tubuh aslimu secara real-time.</p>
+      <p>Di dinding studio terpampang <strong>cermin desktop-mu yang asli</strong> — layar Windows di-<em>mirror</em> ke dalam dunia VR lewat <code>getDisplayMedia</code> (kamera &amp; seluruh layar diizinkan otomatis, tanpa popup). Di sinilah trik paling cerdasnya: aplikasi meng-<em>host</em> dirinya di <strong>jendela WebView2 miliknya sendiri</strong> (via pywebview), supaya jendela itu bisa dikecualikan dari perekaman layar (<code>WDA_EXCLUDEFROMCAPTURE</code>). Hasilnya cermin tetap bersih — <strong>tak ada efek 'terowongan tak terbatas'</strong> (VR di dalam VR di dalam VR…).</p>
+      <p>Yang membuatnya benar-benar beda: dari dalam VR kamu bisa <strong>mengendalikan desktop Windows yang sebenarnya</strong>. Dengan satu tombol (atau <code>Ctrl+O</code>), jendela avatar diubah jadi <em>click-through</em> (<code>WS_EX_TRANSPARENT</code>) sementara avatar tetap digambar paling atas (<code>TOPMOST</code>) — jadi mouse &amp; keyboard aslimu menembus ke aplikasi nyata di belakangnya, tanpa keluar dari 'dunia' VR.</p>
+      <p>Kursor asli sistem disembunyikan, lalu posisinya di-<em>stream</em> ~100&nbsp;kali per detik dan digambar ulang sebagai <strong>kursor biru sintetis yang terkalibrasi</strong> di atas cermin dinding — jadi yang kamu lihat cuma satu kursor rapi, bukan panah sistem yang melayang menembus muka avatar.</p>
+      <p>Lengkap dengan <strong>perekam layar bawaan</strong>: video direkam sekaligus suara <em>device</em> (WASAPI loopback) yang digabung dengan mikrofon lewat <em>ffmpeg</em>. Dijaga <em>single-instance</em> (biar dua salinan tak berebut webcam), punya tombol <strong>Bersihkan</strong> &amp; <strong>Layar Penuh</strong>, dan tinggal dijalankan lewat <strong>VR Avatar.vbs</strong>.</p>
+
+    </section>
+
+    <section class="section">
+      <div class="s-label">Video</div>
+      <div class="video-shell">
+        <video class="karya-video" controls preload="metadata"
+               poster="../assets/media/vr-avatar/Cuplikan%20layar%202026-06-15%20093028.png"
+               data-hint="taruh video (.mp4) di folder: assets/media/vr-avatar/">
+          <source src="../assets/media/vr-avatar/0702%20%282%29.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Cuplikan Layar</div>
+      <div class="gallery">
+        <figure><img class="shot" src="../assets/media/vr-avatar/Cuplikan%20layar%202026-06-15%20093028.png" alt="VR Avatar — cuplikan 1" data-hint="media/vr-avatar/Cuplikan layar 2026-06-15 093028.png"><figcaption>Cuplikan 1</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/vr-avatar/Cuplikan%20layar%202026-07-02%20213056.png" alt="VR Avatar — cuplikan 2" data-hint="media/vr-avatar/Cuplikan layar 2026-07-02 213056.png"><figcaption>Cuplikan 2</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/vr-avatar/Cuplikan%20layar%202026-07-02%20213410.png" alt="VR Avatar — cuplikan 3" data-hint="media/vr-avatar/Cuplikan layar 2026-07-02 213410.png"><figcaption>Cuplikan 3</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/vr-avatar/Cuplikan%20layar%202026-07-02%20213705.png" alt="VR Avatar — cuplikan 4" data-hint="media/vr-avatar/Cuplikan layar 2026-07-02 213705.png"><figcaption>Cuplikan 4</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Fitur Unggulan</div>
+      <div class="feat-grid">
+        <div class="feat"><h3>Avatar Roblox hidup</h3><p>FaceMesh + Hands → Three.js; kepala, ekspresi, dan tangan mengikuti gerak webcam.</p></div>
+        <div class="feat"><h3>Cermin desktop di VR</h3><p>Layar Windows asli di-mirror ke dinding studio lewat getDisplayMedia.</p></div>
+        <div class="feat"><h3>Anti-'terowongan'</h3><p>Jendela di-host sendiri lalu dikecualikan dari capture — cermin bersih, tanpa VR-dalam-VR.</p></div>
+        <div class="feat"><h3>Kontrol desktop asli</h3><p>Jendela click-through: mouse &amp; keyboard menembus ke aplikasi nyata di belakang avatar.</p></div>
+        <div class="feat"><h3>Kursor biru sintetis</h3><p>Kursor sistem disembunyikan, digambar ulang terkalibrasi di cermin (~100 Hz).</p></div>
+        <div class="feat"><h3>Rekam layar + suara</h3><p>Perekam bawaan menggabung video, audio device (loopback), dan mic via ffmpeg.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Teknologi</div>
+      <div class="chips">
+        <span class="chip">Three.js</span>
+        <span class="chip">MediaPipe FaceMesh</span>
+        <span class="chip">MediaPipe Hands</span>
+        <span class="chip">GLTFLoader (.glb)</span>
+        <span class="chip">pywebview / WebView2</span>
+        <span class="chip">Win32 (ctypes)</span>
+        <span class="chip">getDisplayMedia</span>
+        <span class="chip">ffmpeg</span>
+      </div>
+    </section>
+
+    <nav class="pager">
+      <a href="hand-cursor.html" data-transition data-accent="#34d399">← Hand Cursor</a>
+      <a href="dims-nexus.html" data-transition data-accent="#f59e0b">DIMS Nexus →</a>
+    </nav>
+  </main>
+
+  <footer class="site-foot wrap">
+    ARSIP KARYA · PT DIMS — <a href="../index.html" data-transition>kembali ke daftar</a>
+  </footer>
+
+  <script src="../assets/js/detail.js"></script>
+</body>
+</html>

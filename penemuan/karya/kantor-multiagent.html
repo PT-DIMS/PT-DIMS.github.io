@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kantor Multi-Agent · Arsip Karya PT DIMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>:root{ --accent:#2dd4bf; }</style>
+</head>
+<body data-accent="#2dd4bf">
+  <div class="wrap">
+    <nav class="detail-nav">
+      <a class="back-btn" href="../index.html" data-transition>← semua karya</a>
+      <span class="brand"><b>PT DIMS</b> · ARSIP</span>
+    </nav>
+  </div>
+
+  <header class="hero wrap">
+    <div class="h-icon">🏢</div>
+    <h1>Kantor Multi-Agent</h1>
+    <p class="tagline">Sebuah kantor virtual berisi tiga pegawai AI yang bekerja bersama.</p>
+    <div class="badges">
+      <span class="badge status"><i></i>Eksperimen · end-to-end teruji</span>
+      <span class="badge accent">arsip #08</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section story">
+      <div class="s-label">Cerita</div>
+      <p>Kantor Multi-Agent adalah <strong>eksperimen orkestrasi</strong>: alih-alih satu model mengerjakan segalanya, tugas dijalankan oleh sebuah <strong>tim AI</strong> layaknya kantor kecil. Di pusatnya ada seorang <strong>Manajer</strong> (<code>manager.py</code>) yang menerima satu perintah, <em>memecahnya</em> jadi bagian-bagian, membagikannya ke pegawai yang tepat, lalu <em>menyintesis</em> semua hasil jadi satu jawaban utuh — kelanjutan dari orkestrator dwi-model di proyek Agent AI Lokal.</p>
+      <p>Ada <strong>tiga pegawai</strong>, masing-masing dengan meja &amp; perannya sendiri: <strong>CLAUDE</strong> sang <em>analis &amp; penulis</em> (dijalankan lewat <code>claude -p</code>), <strong>BLACKBOX</strong> sang <em>engineer/koder</em> (lewat <code>blackbox -p</code>), dan <strong>AGENT</strong> sang <em>eksekutor</em> — yaitu router lokal (<code>router.process_message</code>) dengan puluhan tool nyata: file, web, sistem, sampai akses Google. Manajer mengalirkan konteks antar-langkah, jadi keluaran satu pegawai bisa jadi masukan pegawai berikutnya.</p>
+      <p>Untuk urusan dunia luar, kantor punya <strong>identitas sendiri</strong>: akun khusus <code>kantorptdims@gmail.com</code> (bukan akun pribadi). Perjalanannya jadi pelajaran keamanan yang nyata — awalnya akses Gmail lewat <strong>otomasi browser (Playwright)</strong>, tapi Google menandainya sebagai aktivitas mencurigakan, sehingga kantor <strong>bermigrasi ke Gmail API resmi (OAuth)</strong> yang lebih cepat &amp; stabil. Pelajarannya: untuk menyentuh layanan, <em>pintu resmi (API) selalu menang atas jendela (scraping)</em>.</p>
+      <p>Yang bikin kantor ini tak sembarang otomatis: setiap <strong>aksi berisiko</strong> — mengirim email, menghapus, membayar, memposting — dijaga <strong>gerbang human-in-the-loop</strong>. Contohnya email: kantor menyusun <em>draf</em>, tapi jari manusia yang menekan Kirim. Kecerdasan penuh, kendali tetap di tangan pemilik.</p>
+      <p>Kantor ini juga punya <strong>wajah</strong>. Ada <strong>dashboard Control-Room</strong> (web): tiga kartu pegawai dengan status &amp; progres real-time, feed aktivitas, dan satu kolom perintah — cukup ketik tugas, tekan Kirim. Ada pula <strong>kantor 3D isometrik</strong> (Three.js, disimpan lokal/offline-first) tempat para pegawai duduk di mejanya, plus <em>aplikasi suara per-agen</em> berwajah HUD dengan warna khas (Claude coral, BlackBox biru, Agent cyan). Semuanya dikemas jadi satu <strong>.exe</strong>. Uji nyatanya: diberi tugas <em>“buat analisis mengapa rupiah melemah jadi PDF, lalu kirim”</em> — Manajer membaginya, Claude meriset &amp; menulis, dan kantor menuntaskannya jadi dokumen utuh.</p>
+      <div class="note"><b>Catatan</b><span>Proyek eksperimen orkestrasi multi-agent. Aksi ke dunia luar selalu di bawah kendali &amp; persetujuan manusia (human-in-the-loop).</span></div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Video</div>
+      <div class="video-shell">
+        <video class="karya-video" controls preload="metadata"
+               poster="../assets/media/kantor-multiagent/cover.png"
+               data-hint="taruh video (.mp4) di folder: assets/media/kantor-multiagent/">
+          <source src="../assets/media/kantor-multiagent/video.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Cuplikan Layar</div>
+      <div class="gallery">
+        <figure><img class="shot" src="../assets/media/kantor-multiagent/shot1-kantor3d.png" alt="Kantor Multi-Agent — cuplikan 1" data-hint="media/kantor-multiagent/shot1-kantor3d.png"><figcaption>Cuplikan 1</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/kantor-multiagent/shot2-kerja.png" alt="Kantor Multi-Agent — cuplikan 2" data-hint="media/kantor-multiagent/shot2-kerja.png"><figcaption>Cuplikan 2</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Fitur Unggulan</div>
+      <div class="feat-grid">
+        <div class="feat"><h3>Tiga pegawai AI</h3><p>Claude (analis &amp; penulis), BlackBox (engineer), Agent (eksekutor + Google) — tiap meja punya peran.</p></div>
+        <div class="feat"><h3>Manajer pembagi tugas</h3><p>Satu perintah dipecah, dibagikan ke spesialis, lalu hasilnya disintesis jadi jawaban utuh.</p></div>
+        <div class="feat"><h3>Human-in-the-loop</h3><p>Aksi berisiko (kirim/hapus/bayar/posting) wajib lewat persetujuan manusia — email dibuat draf dulu.</p></div>
+        <div class="feat"><h3>Identitas &amp; API resmi</h3><p>Akun kantor khusus; migrasi dari otomasi browser ke Gmail API resmi setelah ditandai Google.</p></div>
+        <div class="feat"><h3>Dua wajah: Control-Room &amp; 3D</h3><p>Dashboard status/progres real-time + kantor 3D isometrik (Three.js offline-first).</p></div>
+        <div class="feat"><h3>Dikemas .exe</h3><p>Suara per-agen berwajah HUD (warna khas tiap AI), dijalankan lewat satu Kantor PT DIMS.exe.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Teknologi</div>
+      <div class="chips">
+        <span class="chip">Python</span>
+        <span class="chip">Manager orchestrator</span>
+        <span class="chip">claude -p</span>
+        <span class="chip">blackbox -p</span>
+        <span class="chip">router.py (Agent lokal)</span>
+        <span class="chip">Ollama</span>
+        <span class="chip">Gmail API (OAuth)</span>
+        <span class="chip">Playwright (fallback)</span>
+        <span class="chip">Three.js (kantor 3D)</span>
+        <span class="chip">pywebview .exe</span>
+      </div>
+    </section>
+
+    <nav class="pager">
+      <a href="arg-dimensi.html" data-transition data-accent="#dc2626">← ARG "Dimensi"</a>
+      <a class="disabled">→</a>
+    </nav>
+  </main>
+
+  <footer class="site-foot wrap">
+    ARSIP KARYA · PT DIMS — <a href="../index.html" data-transition>kembali ke daftar</a>
+  </footer>
+
+  <script src="../assets/js/detail.js"></script>
+</body>
+</html>

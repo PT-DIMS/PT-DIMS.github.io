@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hand Cursor · Arsip Karya PT DIMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>:root{ --accent:#34d399; }</style>
+</head>
+<body data-accent="#34d399">
+  <div class="wrap">
+    <nav class="detail-nav">
+      <a class="back-btn" href="../index.html" data-transition>← semua karya</a>
+      <span class="brand"><b>PT DIMS</b> · ARSIP</span>
+    </nav>
+  </div>
+
+  <header class="hero wrap">
+    <div class="h-icon">🖐️</div>
+    <h1>Hand Cursor</h1>
+    <p class="tagline">Gerakkan kursor Windows hanya dengan lambaian tangan.</p>
+    <div class="badges">
+      <span class="badge status"><i></i>Selesai · v1</span>
+      <span class="badge accent">arsip #02</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section story">
+      <div class="s-label">Cerita</div>
+      <p>Hand Cursor mengubah webcam biasa menjadi alat penunjuk. Lewat <strong>MediaPipe Hands</strong>, 21 titik sendi tangan dilacak real-time (via OpenCV), lalu diterjemahkan menjadi posisi kursor Windows melalui Win32 <code>SetCursorPos</code> — sadar-DPI, jadi presisi di layar resolusi apa pun.</p>
+      <p>Kosakata gesturnya lengkap: <strong>gerakkan jari manis</strong> untuk menggeser kursor, <strong>cubit jempol+telunjuk</strong> untuk klik kiri, <strong>cubit &amp; tahan</strong> lalu geser untuk <em>drag</em>, <strong>cubit jempol+jari tengah</strong> untuk klik kanan, dan <strong>angkat telunjuk+tengah</strong> untuk scroll. Titik patokan sengaja dipasang di jari manis — jadi saat kamu mencubit untuk mengeklik, kursor tetap diam &amp; klik mendarat tepat.</p>
+      <p>Yang bikin terasa halus bukan kebetulan. Koordinat dilewatkan <strong>One Euro Filter</strong> (Casiez dkk., 2012) — mulus saat tangan diam, responsif saat gerak cepat — dan kursor digerakkan oleh <em>thread</em> tersendiri di <strong>144&nbsp;Hz</strong> dengan easing, jadi tetap lembut walau FPS kamera rendah. Deteksi cubitan dinormalkan ke ukuran tangan (plus histeresis), sehingga <strong>konsisten di jarak berapa pun</strong> dari kamera.</p>
+      <p>Semua gerakan cukup di 'kotak aktif' kecil di tengah frame yang sudah memetakan seluruh layar. Dibungkus Python 3.11 terisolasi, dijaga <em>single-instance mutex</em> (biar dua instance tak berebut kursor), dan dijalankan cukup dengan satu klik <strong>RUN.bat</strong> atau lewat <strong>.exe</strong>-nya.</p>
+
+    </section>
+
+    <section class="section">
+      <div class="s-label">Video</div>
+      <div class="video-shell">
+        <video class="karya-video" controls preload="metadata"
+               poster="../assets/media/hand-cursor/Cuplikan%20layar%202026-.png"
+               data-hint="taruh video (.mp4) di folder: assets/media/hand-cursor/">
+          <source src="../assets/media/hand-cursor/0702%20%281%29.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Cuplikan Layar</div>
+      <div class="gallery">
+        <figure><img class="shot" src="../assets/media/hand-cursor/Cuplikan%20layar%202026-.png" alt="Hand Cursor — cuplikan 1" data-hint="media/hand-cursor/Cuplikan layar 2026-.png"><figcaption>Cuplikan 1</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/hand-cursor/Cuplikan%20layar%202026-07-02%20131332.png" alt="Hand Cursor — cuplikan 2" data-hint="media/hand-cursor/Cuplikan layar 2026-07-02 131332.png"><figcaption>Cuplikan 2</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/hand-cursor/Cuplikan%20layar%202026-07-02%20131819.png" alt="Hand Cursor — cuplikan 3" data-hint="media/hand-cursor/Cuplikan layar 2026-07-02 131819.png"><figcaption>Cuplikan 3</figcaption></figure>
+        <figure><img class="shot" src="../assets/media/hand-cursor/Cuplikan%20layar%202026-07-02%20132356.png" alt="Hand Cursor — cuplikan 4" data-hint="media/hand-cursor/Cuplikan layar 2026-07-02 132356.png"><figcaption>Cuplikan 4</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Fitur Unggulan</div>
+      <div class="feat-grid">
+        <div class="feat"><h3>Patokan jari manis</h3><p>Kursor mengikuti ujung jari manis — tetap stabil saat jari lain mencubit untuk klik.</p></div>
+        <div class="feat"><h3>5 gestur</h3><p>Geser, klik kiri (cubit), klik kanan, drag (cubit-tahan), dan scroll dua jari.</p></div>
+        <div class="feat"><h3>Halus &amp; anti-getar</h3><p>One Euro Filter + thread glide 144 Hz bikin gerakan mulus walau FPS kamera rendah.</p></div>
+        <div class="feat"><h3>Konsisten segala jarak</h3><p>Cubitan dinormalkan ke ukuran tangan + histeresis — klik andal dekat maupun jauh.</p></div>
+        <div class="feat"><h3>Kotak aktif</h3><p>Area kecil di tengah frame memetakan seluruh layar; tak perlu jangkau pinggir.</p></div>
+        <div class="feat"><h3>Sekali klik</h3><p>Jalan langsung lewat RUN.bat atau .exe, dijaga single-instance mutex.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="s-label">Teknologi</div>
+      <div class="chips">
+        <span class="chip">Python 3.11</span>
+        <span class="chip">MediaPipe Hands</span>
+        <span class="chip">OpenCV</span>
+        <span class="chip">pyautogui</span>
+        <span class="chip">ctypes / Win32</span>
+        <span class="chip">One Euro Filter</span>
+        <span class="chip">Thread glide 144 Hz</span>
+      </div>
+    </section>
+
+    <nav class="pager">
+      <a href="agent-ai.html" data-transition data-accent="#22d3ee">← Agent AI Lokal</a>
+      <a href="vr-avatar.html" data-transition data-accent="#a78bfa">VR Avatar →</a>
+    </nav>
+  </main>
+
+  <footer class="site-foot wrap">
+    ARSIP KARYA · PT DIMS — <a href="../index.html" data-transition>kembali ke daftar</a>
+  </footer>
+
+  <script src="../assets/js/detail.js"></script>
+</body>
+</html>
