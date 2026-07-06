@@ -1,0 +1,457 @@
+<!-- (c) 2026 PT DIMS - Dimas Aditya Makarim. Seluruh kode & konten dilindungi hak cipta. Dilarang menyalin, mem-parse ulang, atau mengklaim sebagai milik sendiri. --><!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>DIMS Security Toolkit</title>
+<meta name="theme-color" content="#050814">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo+2:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050814; --bg2:#0a1024; --card:rgba(0,180,255,.05); --line:rgba(0,180,255,.18);
+  --cy:#00c8ff; --cy2:#66e0ff; --tx:#dbeaf6; --mut:#8fb0cc;
+  --ok:#22e08a; --warn:#ffb020; --bad:#ff4466; --mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);color:var(--tx);font-family:'Exo 2',sans-serif;line-height:1.55;
+  min-height:100dvh;
+  background-image:radial-gradient(ellipse 90% 40% at 85% -5%,rgba(0,90,200,.16),transparent 60%);
+}
+h1,h2,.brand{font-family:'Orbitron',sans-serif;}
+code,pre,input,textarea,.mono{font-family:var(--mono);}
+::selection{background:rgba(0,200,255,.3);}
+
+/* header */
+header{
+  position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;
+  padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
+  background:rgba(5,8,20,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+}
+header svg{width:30px;height:30px;flex-shrink:0;}
+.brand{font-size:1.02rem;letter-spacing:1.5px;color:#fff;}
+.brand span{color:var(--cy);}
+.badge{margin-left:auto;font-size:.62rem;letter-spacing:1px;color:var(--mut);border:1px solid var(--line);border-radius:20px;padding:4px 10px;font-family:var(--mono);}
+#offline-dot{width:7px;height:7px;border-radius:50%;background:var(--bad);display:inline-block;margin-right:5px;vertical-align:middle;}
+#offline-dot.on{background:var(--ok);}
+
+.wrap{max-width:920px;margin:0 auto;padding:16px 16px 40px;}
+
+/* search + tool grid */
+#search{
+  width:100%;min-height:48px;padding:12px 16px;margin-bottom:18px;border-radius:12px;
+  border:1px solid var(--line);background:var(--bg2);color:var(--tx);font-size:16px;
+}
+#search:focus{outline:2px solid var(--cy);border-color:transparent;}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;}
+.tool-card{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 14px;
+  cursor:pointer;transition:transform .15s,border-color .2s;text-align:left;color:inherit;font:inherit;
+}
+.tool-card:hover{border-color:var(--cy);}
+.tool-card:active{transform:scale(.97);}
+.tool-card .ic{width:26px;height:26px;stroke:var(--cy);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-bottom:10px;}
+.tool-card h3{font-family:'Exo 2';font-size:.95rem;font-weight:600;color:#fff;}
+.tool-card p{font-size:.76rem;color:var(--mut);margin-top:4px;}
+
+/* panel (tool view) */
+#panel{display:none;}
+#panel.on{display:block;}
+#grid-view.off,#search.off{display:none;}
+.back{display:inline-flex;align-items:center;gap:8px;background:none;border:none;color:var(--cy);font:inherit;font-size:.9rem;cursor:pointer;padding:6px 0;margin-bottom:12px;}
+.p-head{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+.p-head svg{width:28px;height:28px;stroke:var(--cy);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.p-head h2{font-size:1.2rem;letter-spacing:1px;color:#fff;}
+.p-desc{color:var(--mut);font-size:.9rem;margin-bottom:20px;}
+
+label{display:block;font-size:.8rem;letter-spacing:.5px;color:var(--cy2);margin:16px 0 7px;text-transform:uppercase;}
+textarea,input[type=text],input[type=number],select{
+  width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);
+  background:var(--bg2);color:var(--tx);font-size:15px;
+}
+textarea{min-height:96px;resize:vertical;font-family:var(--mono);}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--cy);border-color:transparent;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.row>*{flex:1;min-width:0;}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;
+  border-radius:10px;border:1px solid var(--cy);background:rgba(0,200,255,.08);color:var(--cy2);
+  font:inherit;font-weight:600;cursor:pointer;transition:transform .12s;flex:0 0 auto;
+}
+.btn:active{transform:scale(.96);}
+.btn.solid{background:linear-gradient(135deg,#00c2ff,#0066ff);border:none;color:#fff;}
+.btn.sm{min-height:38px;padding:0 14px;font-size:.85rem;}
+.out{
+  margin-top:16px;background:#03060f;border:1px solid var(--line);border-radius:10px;
+  padding:14px;font-family:var(--mono);font-size:.86rem;word-break:break-all;white-space:pre-wrap;
+  min-height:20px;color:var(--cy2);position:relative;
+}
+.out.empty{color:var(--mut);}
+.out .copy{position:absolute;top:8px;right:8px;background:rgba(0,200,255,.12);border:1px solid var(--line);color:var(--cy);border-radius:7px;padding:5px 9px;font-size:.72rem;cursor:pointer;}
+.field{margin-bottom:4px;}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-family:var(--mono);font-size:.84rem;margin-top:12px;}
+.kv .k{color:var(--mut);}
+.meter{height:9px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden;margin:10px 0 6px;}
+.meter i{display:block;height:100%;width:0;transition:width .3s,background .3s;border-radius:5px;}
+.hint{font-size:.82rem;color:var(--mut);margin-top:6px;}
+.tag{display:inline-block;font-family:var(--mono);font-size:.72rem;padding:3px 9px;border-radius:20px;border:1px solid var(--line);color:var(--mut);margin:2px 4px 2px 0;}
+footer{text-align:center;color:var(--mut);font-size:.72rem;padding:24px;font-family:var(--mono);}
+@media(max-width:400px){#grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<header>
+  <svg viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="#00c8ff" stroke-width="2" stroke-linejoin="round"><path d="M16 4 L26.4 10 L26.4 22 L16 28 L5.6 22 L5.6 10 Z"/><path d="M16 16 L16 4 M16 16 L26.4 22 M16 16 L5.6 22"/></g></svg>
+  <div class="brand">DIMS<span>//</span>TOOLKIT</div>
+  <button id="install" class="btn sm" style="display:none;margin-left:auto;flex:0 0 auto">⬇ Install</button>
+  <div class="badge" id="net-badge"><span id="offline-dot"></span><span id="net-label">online</span></div>
+</header>
+
+<div class="wrap">
+  <div id="grid-view">
+    <input id="search" type="text" placeholder="🔍 Cari alat… (hash, base64, jwt, subnet…)" autocomplete="off">
+    <div id="grid"></div>
+  </div>
+  <div id="panel"></div>
+</div>
+
+<footer>DIMS Security Toolkit — offline &amp; portable · 100% jalan di perangkatmu, tidak ada data yang keluar.</footer>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const el = (t,a={},h='') => { const e=document.createElement(t); for(const k in a)e.setAttribute(k,a[k]); if(h)e.innerHTML=h; return e; };
+const enc = new TextEncoder(), dec = new TextDecoder();
+
+/* ---------- helpers ---------- */
+function bytesToHex(buf){ return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join(''); }
+function b64urlDecode(s){ s=s.replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4)s+='='; try{return decodeURIComponent(escape(atob(s)));}catch(e){return atob(s);} }
+function copyBtn(text){ const b=el('button',{class:'copy'},'salin'); b.onclick=()=>{navigator.clipboard.writeText(text).then(()=>{b.textContent='tersalin ✓';setTimeout(()=>b.textContent='salin',1500);});}; return b; }
+function setOut(node, text, isEmpty){
+  node.innerHTML=''; node.classList.toggle('empty',!!isEmpty);
+  node.appendChild(document.createTextNode(text));
+  if(!isEmpty && text) node.appendChild(copyBtn(text));
+}
+
+/* ---------- icons ---------- */
+const IC = {
+  hash:'<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
+  base64:'<path d="M4 7V4h16v3M9 20h6M12 4v16"/><rect x="3" y="9" width="18" height="6" rx="1"/>',
+  url:'<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
+  hex:'<path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M12 7v10M7.5 9.5l9 5M16.5 9.5l-9 5"/>',
+  jwt:'<path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/>',
+  pwgen:'<circle cx="12" cy="8" r="4"/><path d="M12 12v6M9 15l6 0M8 20l8 0"/>',
+  pwstr:'<path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5z"/><path d="M12 8v4"/><path d="M12 15h.01"/>',
+  uuid:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h4M7 13h10M7 17h7"/>',
+  caesar:'<path d="M4 7V4h16v3M9 20h6M12 4v16"/><path d="m17 8 3 3-3 3"/>',
+  subnet:'<rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M12 8v4M12 12H5v4M12 12h7v4"/>',
+  time:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  hmac:'<path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5z"/><path d="M12 8v4M12 15h.01"/><circle cx="12" cy="11" r="1"/>',
+  json:'<path d="M8 3H7a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2 2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2 2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-1"/>',
+  regex:'<path d="M17 3v10M13.5 5.5l7 5M20.5 5.5l-7 5"/><circle cx="6" cy="18" r="2"/>',
+  base:'<path d="M4 7V5h8v2M8 5v14M6 19h4"/><path d="M14 12h6M14 12l2-2M14 12l2 2M20 17h-6M20 17l-2-2M20 17l-2 2"/>',
+  color:'<circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 22a10 10 0 1 1 0-20c4 0 6 2.5 6 5s-2 3-4 3h-2a2 2 0 0 0-2 2c0 1 .5 1.5.5 2.5A2.5 2.5 0 0 1 12 22z"/>',
+  escape:'<path d="m10 8-4 4 4 4M14 8l4 4-4 4"/>',
+  text:'<path d="M4 6h16M4 12h10M4 18h16"/>'
+};
+
+/* ---------- TOOLS ---------- */
+const TOOLS = [];
+function tool(o){ TOOLS.push(o); }
+
+/* Hash */
+tool({id:'hash',name:'Hash / Checksum',ic:'hash',desc:'SHA-1 / 256 / 384 / 512',kw:'sha checksum digest sidik jari',
+  build(p){
+    p.appendChild(el('label',{},'Teks input'));
+    const ta=el('textarea',{placeholder:'ketik apa saja…'}); p.appendChild(ta);
+    p.appendChild(el('label',{},'Algoritma'));
+    const sel=el('select'); ['SHA-256','SHA-1','SHA-384','SHA-512'].forEach(a=>sel.appendChild(el('option',{value:a},a))); p.appendChild(sel);
+    const out=el('div',{class:'out empty'},'hasil hash muncul di sini');
+    const run=async()=>{ if(!ta.value){setOut(out,'hasil hash muncul di sini',true);return;} const buf=await crypto.subtle.digest(sel.value,enc.encode(ta.value)); setOut(out,bytesToHex(buf)); };
+    ta.oninput=run; sel.onchange=run; p.appendChild(out);
+  }});
+
+/* Base64 */
+tool({id:'base64',name:'Base64',ic:'base64',desc:'Encode / decode (+URL-safe)',kw:'base64 encode decode url safe',
+  build(p){
+    const ta=el('textarea',{placeholder:'teks atau base64…'});
+    p.appendChild(el('label',{},'Input')); p.appendChild(ta);
+    const urlsafe=el('input',{type:'checkbox'});
+    const lbl=el('label',{style:'text-transform:none;display:flex;align-items:center;gap:8px;cursor:pointer'}); lbl.append(urlsafe,document.createTextNode('URL-safe (-_ tanpa padding)')); p.appendChild(lbl);
+    const row=el('div',{class:'row'});
+    const bEnc=el('button',{class:'btn solid'},'Encode →'), bDec=el('button',{class:'btn'},'← Decode');
+    row.append(bEnc,bDec); p.appendChild(row);
+    const out=el('div',{class:'out empty'},'hasil'); p.appendChild(out);
+    bEnc.onclick=()=>{ try{ let b=btoa(unescape(encodeURIComponent(ta.value))); if(urlsafe.checked)b=b.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); setOut(out,b);}catch(e){setOut(out,'⚠ gagal encode');} };
+    bDec.onclick=()=>{ try{ setOut(out, b64urlDecode(ta.value.trim())); }catch(e){ setOut(out,'⚠ bukan base64 valid'); } };
+  }});
+
+/* URL encode */
+tool({id:'url',name:'URL Encode',ic:'url',desc:'percent-encoding',kw:'url percent encode decode uri',
+  build(p){
+    const ta=el('textarea',{placeholder:'teks atau url…'}); p.appendChild(el('label',{},'Input')); p.appendChild(ta);
+    const row=el('div',{class:'row'}); const e1=el('button',{class:'btn solid'},'Encode'),d1=el('button',{class:'btn'},'Decode'); row.append(e1,d1); p.appendChild(row);
+    const out=el('div',{class:'out empty'},'hasil'); p.appendChild(out);
+    e1.onclick=()=>setOut(out,encodeURIComponent(ta.value));
+    d1.onclick=()=>{try{setOut(out,decodeURIComponent(ta.value));}catch(e){setOut(out,'⚠ gagal decode');}};
+  }});
+
+/* Hex <-> text */
+tool({id:'hex',name:'Hex ⇄ Teks',ic:'hex',desc:'konversi hex & teks',kw:'hex heksadesimal ascii bytes',
+  build(p){
+    const ta=el('textarea',{placeholder:'teks, atau hex (mis. 48 65 6c 6c 6f)'}); p.appendChild(el('label',{},'Input')); p.appendChild(ta);
+    const row=el('div',{class:'row'}); const e1=el('button',{class:'btn solid'},'Teks → Hex'),d1=el('button',{class:'btn'},'Hex → Teks'); row.append(e1,d1); p.appendChild(row);
+    const out=el('div',{class:'out empty'},'hasil'); p.appendChild(out);
+    e1.onclick=()=>setOut(out,[...enc.encode(ta.value)].map(b=>b.toString(16).padStart(2,'0')).join(' '));
+    d1.onclick=()=>{try{const h=ta.value.replace(/0x/gi,'').replace(/[^0-9a-f]/gi,''); if(h.length%2)throw 0; const arr=h.match(/.{2}/g).map(x=>parseInt(x,16)); setOut(out,dec.decode(new Uint8Array(arr)));}catch(e){setOut(out,'⚠ hex tidak valid');}};
+  }});
+
+/* JWT decoder */
+tool({id:'jwt',name:'JWT Decoder',ic:'jwt',desc:'baca header & payload token',kw:'jwt json web token bearer decode',
+  build(p){
+    const ta=el('textarea',{placeholder:'tempel token eyJ...'}); p.appendChild(el('label',{},'Token JWT')); p.appendChild(ta);
+    const out=el('div',{class:'out empty'},'header & payload muncul di sini'); p.appendChild(out);
+    ta.oninput=()=>{ const t=ta.value.trim(); if(!t){setOut(out,'header & payload muncul di sini',true);return;} const parts=t.split('.'); if(parts.length<2){setOut(out,'⚠ format bukan JWT (butuh header.payload.signature)');return;}
+      try{ const h=JSON.parse(b64urlDecode(parts[0])), pl=JSON.parse(b64urlDecode(parts[1]));
+        let s='== HEADER ==\n'+JSON.stringify(h,null,2)+'\n\n== PAYLOAD ==\n'+JSON.stringify(pl,null,2);
+        if(pl.exp){ const d=new Date(pl.exp*1000); s+='\n\nexp: '+d.toLocaleString()+(d<new Date()?'  ⚠ SUDAH KEDALUWARSA':'  ✓ masih valid'); }
+        setOut(out,s);
+      }catch(e){ setOut(out,'⚠ gagal decode base64url'); } };
+  }});
+
+/* Password generator */
+tool({id:'pwgen',name:'Generator Sandi',ic:'pwgen',desc:'sandi kuat acak',kw:'password generator sandi acak random kuat',
+  build(p){
+    p.appendChild(el('label',{},'Panjang: <b id="pl">20</b>'));
+    const rng=el('input',{type:'range',min:'6',max:'64',value:'20',style:'width:100%'}); p.appendChild(rng);
+    const opts={upper:'A-Z',lower:'a-z',num:'0-9',sym:'!@#$%'}; const checks={};
+    Object.entries(opts).forEach(([k,v])=>{ const c=el('input',{type:'checkbox'}); c.checked=true; checks[k]=c; const l=el('label',{style:'text-transform:none;display:inline-flex;gap:6px;align-items:center;margin-right:16px;cursor:pointer'}); l.append(c,document.createTextNode(v)); p.appendChild(l); });
+    const b=el('button',{class:'btn solid',style:'margin-top:16px'},'⟳ Buat Sandi'); p.appendChild(b);
+    const out=el('div',{class:'out empty'},'klik untuk membuat'); p.appendChild(out);
+    rng.oninput=()=>{$('#pl').textContent=rng.value;};
+    const gen=()=>{ let pool=''; if(checks.upper.checked)pool+='ABCDEFGHIJKLMNOPQRSTUVWXYZ'; if(checks.lower.checked)pool+='abcdefghijklmnopqrstuvwxyz'; if(checks.num.checked)pool+='0123456789'; if(checks.sym.checked)pool+='!@#$%^&*()-_=+[]{};:,.<>?'; if(!pool){setOut(out,'⚠ pilih minimal 1 jenis');return;} const n=+rng.value, a=new Uint32Array(n); crypto.getRandomValues(a); let s=''; for(let i=0;i<n;i++)s+=pool[a[i]%pool.length]; setOut(out,s); };
+    b.onclick=gen; gen();
+  }});
+
+/* Password strength */
+tool({id:'pwstr',name:'Cek Kekuatan Sandi',ic:'pwstr',desc:'estimasi entropi',kw:'password strength entropi kekuatan sandi',
+  build(p){
+    p.appendChild(el('label',{},'Sandi'));
+    const inp=el('input',{type:'text',placeholder:'ketik sandi…',autocomplete:'off'}); p.appendChild(inp);
+    const meter=el('div',{class:'meter'}); const bar=el('i'); meter.appendChild(bar); p.appendChild(meter);
+    const info=el('div',{class:'kv'}); p.appendChild(info);
+    inp.oninput=()=>{ const v=inp.value; let pool=0; if(/[a-z]/.test(v))pool+=26; if(/[A-Z]/.test(v))pool+=26; if(/[0-9]/.test(v))pool+=10; if(/[^a-zA-Z0-9]/.test(v))pool+=33;
+      const bits=v?Math.round(v.length*Math.log2(pool||1)):0;
+      const guesses=Math.pow(2,bits); const perSec=1e10; const secs=guesses/perSec;
+      let human; if(!v)human='—'; else if(secs<1)human='seketika'; else if(secs<3600)human=Math.round(secs)+' detik'; else if(secs<86400)human=Math.round(secs/3600)+' jam'; else if(secs<3.15e7)human=Math.round(secs/86400)+' hari'; else if(secs<3.15e9)human=Math.round(secs/3.15e7)+' tahun'; else human=(secs/3.15e7).toExponential(1)+' tahun';
+      let lvl,col; if(bits<40){lvl='LEMAH';col='var(--bad)';} else if(bits<60){lvl='SEDANG';col='var(--warn)';} else if(bits<80){lvl='KUAT';col='var(--cy)';} else{lvl='SANGAT KUAT';col='var(--ok)';}
+      bar.style.width=Math.min(100,bits/128*100)+'%'; bar.style.background=col;
+      info.innerHTML='<span class="k">Tingkat</span><span style="color:'+col+';font-weight:600">'+(v?lvl:'—')+'</span>'+
+        '<span class="k">Entropi</span><span>'+bits+' bit</span>'+
+        '<span class="k">Panjang</span><span>'+v.length+' karakter</span>'+
+        '<span class="k">Perkiraan bobol*</span><span>'+human+'</span>';
+    };
+    p.appendChild(el('div',{class:'hint'},'*asumsi 10 miliar tebakan/detik (offline brute-force). Estimasi kasar, bukan jaminan.'));
+    inp.dispatchEvent(new Event('input'));
+  }});
+
+/* UUID */
+tool({id:'uuid',name:'UUID v4',ic:'uuid',desc:'generator ID unik',kw:'uuid guid id unik acak',
+  build(p){
+    const b=el('button',{class:'btn solid'},'⟳ Buat UUID'); const b5=el('button',{class:'btn',style:'margin-left:10px'},'× 5');
+    const row=el('div',{class:'row',style:'flex:0'}); row.append(b,b5); p.appendChild(row);
+    const out=el('div',{class:'out'}); p.appendChild(out);
+    const one=()=>crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=crypto.getRandomValues(new Uint8Array(1))[0]%16,v=c==='x'?r:(r&0x3|0x8);return v.toString(16);});
+    b.onclick=()=>setOut(out,one()); b5.onclick=()=>setOut(out,Array.from({length:5},one).join('\n')); b.onclick();
+  }});
+
+/* Caesar / ROT */
+tool({id:'caesar',name:'Caesar / ROT13',ic:'caesar',desc:'geser huruf',kw:'caesar rot13 cipher sandi geser sandi klasik',
+  build(p){
+    const ta=el('textarea',{placeholder:'teks…'}); p.appendChild(el('label',{},'Teks')); p.appendChild(ta);
+    p.appendChild(el('label',{},'Geser: <b id="sh">13</b>'));
+    const rng=el('input',{type:'range',min:'0',max:'25',value:'13',style:'width:100%'}); p.appendChild(rng);
+    const out=el('div',{class:'out empty'},'hasil'); p.appendChild(out);
+    const run=()=>{ const s=+rng.value; $('#sh').textContent=s; const r=ta.value.replace(/[a-z]/gi,c=>{const base=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-base+s)%26+base);}); setOut(out, ta.value?r:'hasil', !ta.value); };
+    ta.oninput=run; rng.oninput=run;
+  }});
+
+/* Subnet calc */
+tool({id:'subnet',name:'Subnet / CIDR',ic:'subnet',desc:'kalkulator jaringan IPv4',kw:'subnet cidr ip jaringan netmask network broadcast',
+  build(p){
+    p.appendChild(el('label',{},'IP / CIDR'));
+    const inp=el('input',{type:'text',value:'192.168.1.10/24',placeholder:'192.168.1.10/24'}); p.appendChild(inp);
+    const out=el('div',{class:'out empty'},'masukkan IP/CIDR'); p.appendChild(out);
+    const toInt=ip=>ip.split('.').reduce((a,o)=>(a<<8)+ (+o),0)>>>0;
+    const toIp=n=>[24,16,8,0].map(s=>(n>>>s)&255).join('.');
+    const run=()=>{ const m=inp.value.trim().match(/^(\d+\.\d+\.\d+\.\d+)(?:\/(\d+))?$/); if(!m){setOut(out,'⚠ format: a.b.c.d/nn');return;}
+      const parts=m[1].split('.').map(Number); if(parts.some(o=>o<0||o>255)){setOut(out,'⚠ oktet 0-255');return;}
+      const cidr=m[2]!==undefined?+m[2]:24; if(cidr<0||cidr>32){setOut(out,'⚠ prefix 0-32');return;}
+      const ip=toInt(m[1]); const mask=cidr===0?0:(0xFFFFFFFF<<(32-cidr))>>>0;
+      const net=(ip&mask)>>>0, bc=(net|(~mask>>>0))>>>0; const hosts=cidr>=31?0:(bc-net-1);
+      setOut(out,
+        'Network   : '+toIp(net)+'/'+cidr+'\n'+
+        'Netmask   : '+toIp(mask)+'\n'+
+        'Wildcard  : '+toIp(~mask>>>0)+'\n'+
+        'Broadcast : '+toIp(bc)+'\n'+
+        'Host 1st  : '+(cidr>=31?'—':toIp(net+1))+'\n'+
+        'Host last : '+(cidr>=31?'—':toIp(bc-1))+'\n'+
+        'Total host: '+(hosts>0?hosts.toLocaleString():'0')+'\n'+
+        'Total IP  : '+(Math.pow(2,32-cidr)).toLocaleString());
+    };
+    inp.oninput=run; run();
+  }});
+
+/* Timestamp */
+tool({id:'time',name:'Konversi Waktu',ic:'time',desc:'Unix ⇄ tanggal',kw:'timestamp unix epoch waktu tanggal konversi',
+  build(p){
+    p.appendChild(el('label',{},'Unix timestamp (detik atau ms)'));
+    const inp=el('input',{type:'text',placeholder:'mis. 1751760000'}); p.appendChild(inp);
+    const out=el('div',{class:'out empty'},'hasil'); p.appendChild(out);
+    const b=el('button',{class:'btn sm',style:'margin-top:12px'},'⏱ Sekarang'); p.appendChild(b);
+    const run=()=>{ const raw=inp.value.trim(); if(!raw){setOut(out,'hasil',true);return;} let n=Number(raw); if(isNaN(n)){setOut(out,'⚠ bukan angka');return;} if(raw.length<=10)n*=1000; const d=new Date(n);
+      setOut(out,'Lokal : '+d.toLocaleString()+'\nUTC   : '+d.toUTCString()+'\nISO   : '+d.toISOString()+'\nUnix  : '+Math.floor(n/1000)); };
+    inp.oninput=run; b.onclick=()=>{inp.value=Math.floor(Date.now()/1000);run();};
+  }});
+
+/* HMAC */
+tool({id:'hmac',name:'HMAC',ic:'hmac',desc:'tanda tangan pesan berkunci',kw:'hmac sha signature mac kunci secret',
+  build(p){
+    p.appendChild(el('label',{},'Pesan')); const msg=el('textarea',{placeholder:'pesan…'}); p.appendChild(msg);
+    p.appendChild(el('label',{},'Kunci rahasia')); const key=el('input',{type:'text',placeholder:'secret key'}); p.appendChild(key);
+    p.appendChild(el('label',{},'Algoritma')); const sel=el('select'); ['SHA-256','SHA-1','SHA-384','SHA-512'].forEach(a=>sel.appendChild(el('option',{value:a},a))); p.appendChild(sel);
+    const out=el('div',{class:'out empty'},'HMAC muncul di sini'); p.appendChild(out);
+    const run=async()=>{ if(!msg.value||!key.value){setOut(out,'isi pesan & kunci',true);return;}
+      const ck=await crypto.subtle.importKey('raw',enc.encode(key.value),{name:'HMAC',hash:sel.value},false,['sign']);
+      const sig=await crypto.subtle.sign('HMAC',ck,enc.encode(msg.value)); setOut(out,bytesToHex(sig)); };
+    msg.oninput=run; key.oninput=run; sel.onchange=run;
+  }});
+
+/* JSON format */
+tool({id:'json',name:'JSON Format',ic:'json',desc:'rapikan & validasi',kw:'json format validate pretty minify beautify',
+  build(p){
+    const ta=el('textarea',{placeholder:'{"tempel":"json di sini"}',style:'min-height:120px'}); p.appendChild(el('label',{},'JSON')); p.appendChild(ta);
+    const row=el('div',{class:'row'}); const b1=el('button',{class:'btn solid'},'Rapikan'),b2=el('button',{class:'btn'},'Minify'); row.append(b1,b2); p.appendChild(row);
+    const out=el('div',{class:'out empty'},'hasil'); p.appendChild(out);
+    const parse=()=>{ try{return JSON.parse(ta.value);}catch(e){ setOut(out,'⚠ JSON tidak valid:\n'+e.message); return undefined; } };
+    b1.onclick=()=>{ const o=parse(); if(o!==undefined)setOut(out,JSON.stringify(o,null,2)); };
+    b2.onclick=()=>{ const o=parse(); if(o!==undefined)setOut(out,JSON.stringify(o)); };
+  }});
+
+/* Regex tester */
+tool({id:'regex',name:'Regex Tester',ic:'regex',desc:'uji pola & lihat cocokan',kw:'regex regexp pola pattern match cocok',
+  build(p){
+    p.appendChild(el('label',{},'Pola (regex)')); const rx=el('input',{type:'text',placeholder:'\\b\\w+@\\w+\\.\\w+\\b'}); p.appendChild(rx);
+    p.appendChild(el('label',{},'Flag')); const fl=el('input',{type:'text',value:'g',placeholder:'g i m s'}); p.appendChild(fl);
+    p.appendChild(el('label',{},'Teks uji')); const ta=el('textarea',{placeholder:'teks…'}); p.appendChild(ta);
+    const out=el('div',{class:'out empty'},'cocokan muncul di sini'); p.appendChild(out);
+    const run=()=>{ if(!rx.value){setOut(out,'cocokan muncul di sini',true);return;}
+      let re; try{ re=new RegExp(rx.value, fl.value.replace(/[^gimsuy]/g,'')); }catch(e){ setOut(out,'⚠ regex error: '+e.message); return; }
+      const m=[...ta.value.matchAll(re.flags.includes('g')?re:new RegExp(re.source,re.flags+'g'))];
+      if(!m.length){ setOut(out,'0 cocokan'); return; }
+      setOut(out, m.length+' cocokan:\n'+m.map((x,i)=>'['+(i+1)+'] "'+x[0]+'"'+(x.length>1?'  grup: '+x.slice(1).map(g=>g===undefined?'∅':'"'+g+'"').join(', '):'')).join('\n')); };
+    rx.oninput=run; fl.oninput=run; ta.oninput=run;
+  }});
+
+/* Base converter */
+tool({id:'base',name:'Konversi Basis',ic:'base',desc:'bin / oct / dec / hex',kw:'basis biner oktal desimal heksa base converter angka',
+  build(p){
+    const fields={2:'Biner',8:'Oktal',10:'Desimal',16:'Heksadesimal'}; const inps={};
+    Object.entries(fields).forEach(([b,nm])=>{ p.appendChild(el('label',{},nm+' (basis '+b+')')); const i=el('input',{type:'text',autocomplete:'off','data-b':b}); inps[b]=i; p.appendChild(i);
+      i.oninput=()=>{ const raw=i.value.trim(); if(!raw){Object.values(inps).forEach(x=>{if(x!==i)x.value='';});return;}
+        const n=parseInt(raw, +b); if(isNaN(n)){ Object.values(inps).forEach(x=>{if(x!==i)x.value='⚠';}); return; }
+        Object.entries(inps).forEach(([bb,x])=>{ if(x!==i)x.value=n.toString(+bb).toUpperCase(); }); }; });
+    p.appendChild(el('div',{class:'hint'},'Ketik di salah satu kolom, yang lain otomatis mengikuti.'));
+  }});
+
+/* Color converter */
+tool({id:'color',name:'Konversi Warna',ic:'color',desc:'HEX ⇄ RGB ⇄ HSL',kw:'warna color hex rgb hsl konversi',
+  build(p){
+    p.appendChild(el('label',{},'Warna (HEX)')); const inp=el('input',{type:'text',value:'#00c8ff'}); p.appendChild(inp);
+    const sw=el('div',{style:'height:56px;border-radius:10px;margin-top:10px;border:1px solid var(--line)'}); p.appendChild(sw);
+    const out=el('div',{class:'out empty'},'hasil'); p.appendChild(out);
+    const run=()=>{ let h=inp.value.trim().replace('#',''); if(h.length===3)h=h.split('').map(c=>c+c).join(''); if(!/^[0-9a-f]{6}$/i.test(h)){setOut(out,'⚠ HEX tidak valid (mis. #00c8ff)');return;}
+      const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+      const r1=r/255,g1=g/255,b1=b/255,mx=Math.max(r1,g1,b1),mn=Math.min(r1,g1,b1),d=mx-mn; let hh=0; if(d){ if(mx===r1)hh=((g1-b1)/d)%6; else if(mx===g1)hh=(b1-r1)/d+2; else hh=(r1-g1)/d+4; } hh=Math.round(hh*60); if(hh<0)hh+=360; const l=(mx+mn)/2, s=d?Math.round(d/(1-Math.abs(2*l-1))*100):0;
+      sw.style.background='#'+h;
+      setOut(out,'HEX : #'+h.toUpperCase()+'\nRGB : rgb('+r+', '+g+', '+b+')\nHSL : hsl('+hh+', '+s+'%, '+Math.round(l*100)+'%)'); };
+    inp.oninput=run; run();
+  }});
+
+/* Escape */
+tool({id:'escape',name:'Escape / Unescape',ic:'escape',desc:'HTML entity & JS string',kw:'escape unescape html entity xss karakter khusus',
+  build(p){
+    const ta=el('textarea',{placeholder:'teks…'}); p.appendChild(el('label',{},'Input')); p.appendChild(ta);
+    p.appendChild(el('label',{},'Mode')); const sel=el('select'); ['HTML entity','JS string'].forEach(a=>sel.appendChild(el('option',{},a))); p.appendChild(sel);
+    const row=el('div',{class:'row'}); const e1=el('button',{class:'btn solid'},'Escape'),d1=el('button',{class:'btn'},'Unescape'); row.append(e1,d1); p.appendChild(row);
+    const out=el('div',{class:'out empty'},'hasil'); p.appendChild(out);
+    const htmlE=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    const htmlU=s=>{const t=el('textarea'); t.innerHTML=s; return t.value;};
+    const jsE=s=>JSON.stringify(s).slice(1,-1);
+    const jsU=s=>{try{return JSON.parse('"'+s.replace(/"/g,'\\"')+'"');}catch(e){return '⚠ gagal';}};
+    e1.onclick=()=>setOut(out, sel.selectedIndex===0?htmlE(ta.value):jsE(ta.value));
+    d1.onclick=()=>setOut(out, sel.selectedIndex===0?htmlU(ta.value):jsU(ta.value));
+  }});
+
+/* Text stats & case */
+tool({id:'text',name:'Statistik & Ubah Teks',ic:'text',desc:'hitung + ubah huruf',kw:'teks text hitung kata karakter uppercase lowercase case',
+  build(p){
+    const ta=el('textarea',{placeholder:'teks…',style:'min-height:110px'}); p.appendChild(el('label',{},'Teks')); p.appendChild(ta);
+    const stat=el('div',{class:'kv'}); p.appendChild(stat);
+    const row=el('div',{class:'row',style:'margin-top:14px'});
+    [['UPPER',s=>s.toUpperCase()],['lower',s=>s.toLowerCase()],['Title',s=>s.replace(/\w\S*/g,w=>w[0].toUpperCase()+w.slice(1).toLowerCase())],['Balik',s=>[...s].reverse().join('')]].forEach(([nm,fn])=>{ const b=el('button',{class:'btn sm'},nm); b.onclick=()=>{ta.value=fn(ta.value);upd();}; row.appendChild(b); }); p.appendChild(row);
+    const out=el('div',{class:'out empty',style:'margin-top:14px'},'hasil'); p.appendChild(out);
+    const upd=()=>{ const v=ta.value; const words=(v.trim().match(/\S+/g)||[]).length; const lines=v?v.split(/\n/).length:0;
+      stat.innerHTML='<span class="k">Karakter</span><span>'+v.length+'</span><span class="k">Tanpa spasi</span><span>'+v.replace(/\s/g,'').length+'</span><span class="k">Kata</span><span>'+words+'</span><span class="k">Baris</span><span>'+lines+'</span>';
+      setOut(out, v||'hasil', !v); };
+    ta.oninput=upd; upd();
+  }});
+
+/* ---------- render ---------- */
+const grid=$('#grid'), panel=$('#panel'), gridView=$('#grid-view'), search=$('#search');
+function renderGrid(filter=''){
+  grid.innerHTML=''; const f=filter.toLowerCase();
+  TOOLS.filter(t=>!f||(t.name+' '+t.desc+' '+t.kw).toLowerCase().includes(f)).forEach(t=>{
+    const c=el('button',{class:'tool-card'});
+    c.innerHTML='<svg class="ic" viewBox="0 0 24 24">'+IC[t.ic]+'</svg><h3>'+t.name+'</h3><p>'+t.desc+'</p>';
+    c.onclick=()=>openTool(t); grid.appendChild(c);
+  });
+  if(!grid.children.length) grid.appendChild(el('p',{style:'color:var(--mut);grid-column:1/-1;text-align:center;padding:20px'},'tidak ada alat cocok'));
+}
+function openTool(t){
+  panel.innerHTML='';
+  const back=el('button',{class:'back'},'‹ Semua alat'); back.onclick=closeTool; panel.appendChild(back);
+  const head=el('div',{class:'p-head'}); head.innerHTML='<svg viewBox="0 0 24 24">'+IC[t.ic]+'</svg><h2>'+t.name+'</h2>'; panel.appendChild(head);
+  panel.appendChild(el('p',{class:'p-desc'},t.desc));
+  t.build(panel);
+  gridView.classList.add('off'); search.classList.add('off'); panel.classList.add('on');
+  location.hash=t.id; window.scrollTo(0,0);
+}
+function closeTool(){ panel.classList.remove('on'); gridView.classList.remove('off'); search.classList.remove('off'); if(location.hash)history.pushState('','',location.pathname); }
+search.oninput=()=>renderGrid(search.value);
+window.addEventListener('hashchange',()=>{ const t=TOOLS.find(x=>x.id===location.hash.slice(1)); if(t)openTool(t); else closeTool(); });
+renderGrid();
+if(location.hash){ const t=TOOLS.find(x=>x.id===location.hash.slice(1)); if(t)openTool(t); }
+
+/* ---------- net status + SW ---------- */
+function net(){ const on=navigator.onLine; $('#offline-dot').classList.toggle('on',on); $('#net-label').textContent=on?'online':'offline ✓'; }
+addEventListener('online',net); addEventListener('offline',net); net();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+/* ---------- Install (link → pencet → pasang) ---------- */
+let deferredPrompt=null; const installBtn=$('#install');
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; installBtn.style.display='inline-flex'; });
+installBtn.onclick=async()=>{ if(!deferredPrompt)return; deferredPrompt.prompt(); const {outcome}=await deferredPrompt.userChoice; if(outcome==='accepted'){installBtn.textContent='✓ Terpasang';} deferredPrompt=null; };
+window.addEventListener('appinstalled',()=>{ installBtn.style.display='none'; });
+// sudah berjalan sebagai app terpasang? sembunyikan tombol
+if(matchMedia('(display-mode: standalone)').matches || navigator.standalone) installBtn.style.display='none';
+</script>
+<script data-goatcounter="https://ptdims.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
