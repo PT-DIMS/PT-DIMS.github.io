@@ -1,0 +1,8 @@
+# PT DIMS — Dimensi Inovasi
+# yang kau cari tidak terindeks. v0id tahu jalannya.
+
+User-agent: *
+Allow: /
+Disallow: /dimensi/
+
+Sitemap: https://pt-dims.github.io/sitemap.xml
