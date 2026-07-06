@@ -158,7 +158,11 @@ const IC = {
   base:'<path d="M4 7V5h8v2M8 5v14M6 19h4"/><path d="M14 12h6M14 12l2-2M14 12l2 2M20 17h-6M20 17l-2-2M20 17l-2 2"/>',
   color:'<circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 22a10 10 0 1 1 0-20c4 0 6 2.5 6 5s-2 3-4 3h-2a2 2 0 0 0-2 2c0 1 .5 1.5.5 2.5A2.5 2.5 0 0 1 12 22z"/>',
   escape:'<path d="m10 8-4 4 4 4M14 8l4 4-4 4"/>',
-  text:'<path d="M4 6h16M4 12h10M4 18h16"/>'
+  text:'<path d="M4 6h16M4 12h10M4 18h16"/>',
+  filehex:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h2M8 17h2M14 13h2M14 17h2"/>',
+  dataimg:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
+  filehash:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6M10 13l-1 4M15 13l-1 4"/>',
+  sort:'<path d="M11 5h10M11 9h7M11 13h4M3 17l3 3 3-3M6 4v16"/>'
 };
 
 /* ---------- TOOLS ---------- */
@@ -411,6 +415,107 @@ tool({id:'text',name:'Statistik & Ubah Teks',ic:'text',desc:'hitung + ubah huruf
       stat.innerHTML='<span class="k">Karakter</span><span>'+v.length+'</span><span class="k">Tanpa spasi</span><span>'+v.replace(/\s/g,'').length+'</span><span class="k">Kata</span><span>'+words+'</span><span class="k">Baris</span><span>'+lines+'</span>';
       setOut(out, v||'hasil', !v); };
     ta.oninput=upd; upd();
+  }});
+
+/* ---------- helper: file picker ---------- */
+function filePicker(p, accept, cb){
+  const wrap=el('label',{class:'btn solid',style:'display:inline-flex;cursor:pointer'});
+  const fi=el('input',{type:'file',style:'display:none'}); if(accept)fi.setAttribute('accept',accept);
+  wrap.append(document.createTextNode('📁 Pilih file'),fi); p.appendChild(wrap);
+  const nm=el('div',{class:'hint',style:'margin-top:8px'},'belum ada file'); p.appendChild(nm);
+  fi.onchange=()=>{ const f=fi.files[0]; if(!f)return; nm.textContent=f.name+'  ·  '+f.size.toLocaleString()+' byte  ·  '+(f.type||'tipe?'); cb(f); };
+  return nm;
+}
+function magicType(bytes){
+  const h=[...bytes.slice(0,12)].map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase();
+  const sigs=[['FFD8FF','JPEG (image/jpeg)'],['89504E47','PNG (image/png)'],['47494638','GIF (image/gif)'],
+    ['424D','BMP (image/bmp)'],['25504446','PDF (application/pdf)'],['504B0304','ZIP/DOCX/APK (zip)'],
+    ['504B0506','ZIP kosong'],['52617221','RAR'],['377ABCAF','7-Zip'],['1F8B','GZIP'],['4D5A','EXE/DLL (MZ)'],
+    ['7F454C46','ELF (Linux binary)'],['49443303','MP3 (ID3)'],['000000','MP4/MOV (cek ftyp)'],['4F676753','OGG'],
+    ['664C6143','FLAC'],['3C3F786D6C','XML'],['3C21444F','HTML']];
+  for(const [sig,name] of sigs) if(h.startsWith(sig)) return name;
+  if(h.slice(0,8)==='52494646' && h.slice(16,24)==='57454250') return 'WEBP (image/webp)';
+  if(h.slice(0,8)==='52494646' && h.slice(16,24)==='57415645') return 'WAV (audio/wav)';
+  return 'tidak dikenali';
+}
+function hexDump(bytes, limit){
+  const n=Math.min(bytes.length,limit); let s='';
+  for(let i=0;i<n;i+=16){
+    const off=i.toString(16).padStart(8,'0');
+    let hex='',asc='';
+    for(let j=0;j<16;j++){ if(i+j<n){ const bb=bytes[i+j]; hex+=bb.toString(16).padStart(2,'0')+' '; asc+=(bb>=32&&bb<127)?String.fromCharCode(bb):'.'; } else hex+='   '; if(j===7)hex+=' '; }
+    s+=off+'  '+hex+' '+asc+'\n';
+  }
+  return s;
+}
+
+/* Gambar/File → Hex */
+tool({id:'filehex',name:'Gambar/File → Hex',ic:'filehex',desc:'hex dump + deteksi magic bytes',kw:'gambar image file hex dump magic bytes signature stego bytes',
+  build(p){
+    p.appendChild(el('label',{},'Pilih gambar / file apa saja'));
+    const info=el('div',{class:'out empty',style:'margin-top:14px'},'info file muncul di sini');
+    const out=el('div',{class:'out empty',style:'margin-top:12px;max-height:420px;overflow:auto;font-size:.74rem'},'hex dump muncul di sini');
+    filePicker(p,'',f=>{
+      const r=new FileReader();
+      r.onload=()=>{ const bytes=new Uint8Array(r.result);
+        const hx=[...bytes.slice(0,8)].map(b=>b.toString(16).padStart(2,'0').toUpperCase()).join(' ');
+        setOut(info,'Ukuran     : '+bytes.length.toLocaleString()+' byte\nMagic bytes: '+hx+'\nTerdeteksi : '+magicType(bytes)+(f.type?'\nTipe (MIME): '+f.type:''));
+        const LIMIT=8192;
+        let d=hexDump(bytes,LIMIT);
+        if(bytes.length>LIMIT) d+='\n… (dipotong di '+LIMIT.toLocaleString()+' byte pertama dari '+bytes.length.toLocaleString()+')';
+        setOut(out,d);
+      };
+      r.readAsArrayBuffer(f);
+    });
+    p.appendChild(info); p.appendChild(out);
+    p.appendChild(el('div',{class:'hint'},'Magic bytes = beberapa byte awal yang menandai jenis file asli — berguna cek file nyamar / stego. Semua diproses di HP-mu.'));
+  }});
+
+/* Gambar → Data URI */
+tool({id:'dataimg',name:'Gambar → Base64 URI',ic:'dataimg',desc:'data: URI buat embed',kw:'gambar image base64 data uri embed inline dataurl',
+  build(p){
+    p.appendChild(el('label',{},'Pilih gambar'));
+    const prev=el('img',{style:'max-width:100%;max-height:180px;border-radius:10px;margin-top:12px;display:none;border:1px solid var(--line)'});
+    const out=el('div',{class:'out empty',style:'margin-top:12px;max-height:220px;overflow:auto;font-size:.74rem'},'data URI muncul di sini');
+    filePicker(p,'image/*',f=>{
+      const r=new FileReader();
+      r.onload=()=>{ prev.src=r.result; prev.style.display='block'; setOut(out,r.result); };
+      r.readAsDataURL(f);
+    });
+    p.appendChild(prev); p.appendChild(out);
+    p.appendChild(el('div',{class:'hint'},'Tempel hasilnya ke src="" atau CSS url() untuk sematkan gambar tanpa file terpisah.'));
+  }});
+
+/* Hash File */
+tool({id:'filehash',name:'Checksum File',ic:'filehash',desc:'SHA file — verifikasi unduhan',kw:'file hash checksum sha256 verifikasi unduhan integritas',
+  build(p){
+    p.appendChild(el('label',{},'File'));
+    p.appendChild(el('label',{},'Algoritma')); const sel=el('select'); ['SHA-256','SHA-1','SHA-384','SHA-512'].forEach(a=>sel.appendChild(el('option',{value:a},a))); p.appendChild(sel);
+    const out=el('div',{class:'out empty',style:'margin-top:12px'},'pilih file untuk dihitung');
+    let lastFile=null;
+    const run=()=>{ if(!lastFile)return; const r=new FileReader(); setOut(out,'menghitung…'); r.onload=async()=>{ const buf=await crypto.subtle.digest(sel.value,r.result); setOut(out,sel.value+':\n'+bytesToHex(buf)); }; r.readAsArrayBuffer(lastFile); };
+    filePicker(p,'',f=>{lastFile=f;run();});
+    sel.onchange=run; p.appendChild(out);
+    p.appendChild(el('div',{class:'hint'},'Bandingkan dengan checksum resmi untuk memastikan file tidak rusak / disusupi.'));
+  }});
+
+/* Sort & dedup baris */
+tool({id:'sort',name:'Urut & Unik Baris',ic:'sort',desc:'sort, dedup, bersihkan',kw:'sort urut baris unik dedup duplikat baris teks',
+  build(p){
+    const ta=el('textarea',{placeholder:'satu item per baris…',style:'min-height:120px'}); p.appendChild(el('label',{},'Baris')); p.appendChild(ta);
+    const out=el('div',{class:'out empty',style:'margin-top:12px;max-height:260px;overflow:auto'},'hasil'); p.appendChild(out);
+    const lines=()=>ta.value.split(/\r?\n/);
+    const apply=fn=>{ const r=fn(lines()); ta.value=r.join('\n'); setOut(out, ta.value||'hasil', !ta.value); };
+    const row=el('div',{class:'row',style:'flex-wrap:wrap;margin-top:12px'});
+    [['A→Z',a=>[...a].sort((x,y)=>x.localeCompare(y))],
+     ['Z→A',a=>[...a].sort((x,y)=>y.localeCompare(x))],
+     ['Unik',a=>[...new Set(a)]],
+     ['Buang kosong',a=>a.filter(x=>x.trim())],
+     ['Balik',a=>[...a].reverse()],
+     ['Acak',a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=crypto.getRandomValues(new Uint32Array(1))[0]%(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}]
+    ].forEach(([nm,fn])=>{ const b=el('button',{class:'btn sm',style:'flex:0 0 auto'},nm); b.onclick=()=>apply(fn); row.appendChild(b); });
+    p.appendChild(row);
+    ta.oninput=()=>setOut(out, ta.value||'hasil', !ta.value);
   }});
 
 /* ---------- render ---------- */

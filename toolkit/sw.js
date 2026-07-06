@@ -1,4 +1,4 @@
-const CACHE = 'dims-toolkit-v1';
+const CACHE = 'dims-toolkit-v2';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png'
