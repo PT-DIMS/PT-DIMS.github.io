@@ -5,6 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>DIMS Security Toolkit</title>
 <meta name="theme-color" content="#050814">
+<script>
+/* Penangkap error: ubah layar hitam/crash jadi pesan yang bisa dibaca & di-screenshot */
+(function(){
+  window.__errs=[];
+  function show(){
+    var run=function(){
+      var d=document.getElementById('__err');
+      if(!d){ d=document.createElement('div'); d.id='__err';
+        d.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#150000;color:#ff9a9a;font:13px/1.6 monospace;padding:18px;overflow:auto;white-space:pre-wrap;-webkit-user-select:text;user-select:text';
+        (document.body||document.documentElement).appendChild(d);
+      }
+      d.textContent='⚠ DIMS Toolkit gagal jalan\n\n'+window.__errs.join('\n\n')+
+        '\n\n— UA —\n'+navigator.userAgent+
+        '\n\n(Screenshot layar ini lalu kirim ke Claude)';
+    };
+    if(document.body) run(); else document.addEventListener('DOMContentLoaded',run);
+  }
+  window.addEventListener('error',function(e){ window.__errs.push((e.message||'error')+(e.filename?(' @ '+String(e.filename).split('/').pop()+':'+e.lineno):'')); show(); });
+  window.addEventListener('unhandledrejection',function(e){ window.__errs.push('promise: '+((e.reason&&e.reason.message)||e.reason||'?')); show(); });
+})();
+</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
