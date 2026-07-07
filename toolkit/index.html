@@ -144,6 +144,7 @@ footer{text-align:center;color:var(--mut);font-size:.72rem;padding:24px;font-fam
 
 <footer>DIMS Security Toolkit — offline &amp; portable · 100% jalan di perangkatmu, tidak ada data yang keluar.</footer>
 
+<script src="qr.js"></script>
 <script>
 "use strict";
 const $ = s => document.querySelector(s);
@@ -183,7 +184,11 @@ const IC = {
   filehex:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h2M8 17h2M14 13h2M14 17h2"/>',
   dataimg:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
   filehash:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6M10 13l-1 4M15 13l-1 4"/>',
-  sort:'<path d="M11 5h10M11 9h7M11 13h4M3 17l3 3 3-3M6 4v16"/>'
+  sort:'<path d="M11 5h10M11 9h7M11 13h4M3 17l3 3 3-3M6 4v16"/>',
+  qr:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM21 14v4M14 21v-2M18 21h3"/>',
+  diff:'<rect x="3" y="2" width="18" height="20" rx="2"/><path d="M9 8h6M12 5v6M9 16h6"/>',
+  cron:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M5 3 2 6M19 3l3 3"/>',
+  vigenere:'<circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 21 2M15 8l3 3M18 5l2 2"/>'
 };
 
 /* ---------- TOOLS ---------- */
@@ -537,6 +542,142 @@ tool({id:'sort',name:'Urut & Unik Baris',ic:'sort',desc:'sort, dedup, bersihkan'
     ].forEach(([nm,fn])=>{ const b=el('button',{class:'btn sm',style:'flex:0 0 auto'},nm); b.onclick=()=>apply(fn); row.appendChild(b); });
     p.appendChild(row);
     ta.oninput=()=>setOut(out, ta.value||'hasil', !ta.value);
+  }});
+
+/* QR generator */
+tool({id:'qr',name:'QR Generator',ic:'qr',desc:'teks / URL → gambar QR',kw:'qr kode qr code generator barcode scan url gambar',
+  build(p){
+    if(typeof qrcode==='undefined'){ p.appendChild(el('div',{class:'out'},'⚠ komponen QR (qr.js) gagal dimuat — coba muat ulang halaman saat online.')); return; }
+    p.appendChild(el('label',{},'Isi (teks / URL)'));
+    const ta=el('textarea',{placeholder:'https://…  atau teks apa saja'}); p.appendChild(ta);
+    p.appendChild(el('label',{},'Koreksi error'));
+    const sel=el('select'); [['M','M — standar'],['L','L — muat paling banyak'],['Q','Q — lebih tahan rusak'],['H','H — paling tahan (muat sedikit)']].forEach(([v,n])=>sel.appendChild(el('option',{value:v},n))); p.appendChild(sel);
+    const cv=el('canvas',{style:'display:none;margin-top:16px;max-width:100%;border-radius:10px'}); p.appendChild(cv);
+    const info=el('div',{class:'hint'},'ketik untuk membuat QR'); p.appendChild(info);
+    const dl=el('a',{class:'btn sm',style:'display:none;margin-top:12px;text-decoration:none',download:'qr-dims.png'},'⬇ Simpan PNG'); p.appendChild(dl);
+    const run=()=>{ const v=ta.value;
+      if(!v){ cv.style.display='none'; dl.style.display='none'; info.textContent='ketik untuk membuat QR'; return; }
+      try{
+        if(qrcode.stringToBytesFuncs && qrcode.stringToBytesFuncs['UTF-8']) qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8'];
+        const q=qrcode(0,sel.value); q.addData(v,'Byte'); q.make();
+        const n=q.getModuleCount(), scale=Math.max(4,Math.floor(300/n)), quiet=4, size=(n+quiet*2)*scale;
+        cv.width=size; cv.height=size; const ctx=cv.getContext('2d');
+        ctx.fillStyle='#fff'; ctx.fillRect(0,0,size,size); ctx.fillStyle='#000';
+        for(let r=0;r<n;r++)for(let c=0;c<n;c++) if(q.isDark(r,c)) ctx.fillRect((c+quiet)*scale,(r+quiet)*scale,scale,scale);
+        cv.style.display='block'; dl.style.display='inline-flex'; dl.href=cv.toDataURL('image/png');
+        info.textContent=n+'×'+n+' modul · versi '+((n-17)/4)+' · koreksi '+sel.value+' · '+v.length+' karakter';
+      }catch(e){
+        cv.style.display='none'; dl.style.display='none';
+        info.textContent=/overflow|length/i.test(String(e))?'⚠ isi kepanjangan untuk QR — kurangi teks atau pakai koreksi L':'⚠ gagal membuat QR: '+e;
+      }
+    };
+    ta.oninput=run; sel.onchange=run;
+    p.appendChild(el('div',{class:'hint'},'QR dibuat 100% offline di perangkatmu — isi tidak dikirim ke mana-mana. Scan pakai kamera HP mana pun.'));
+  }});
+
+/* Diff teks */
+tool({id:'diff',name:'Diff Teks',ic:'diff',desc:'bandingkan 2 teks per baris',kw:'diff bandingkan compare beda perbedaan teks versi',
+  build(p){
+    p.appendChild(el('label',{},'Teks A (lama)')); const a=el('textarea',{placeholder:'versi lama…'}); p.appendChild(a);
+    p.appendChild(el('label',{},'Teks B (baru)')); const b=el('textarea',{placeholder:'versi baru…'}); p.appendChild(b);
+    const out=el('div',{class:'out empty',style:'margin-top:14px;max-height:420px;overflow:auto'},'perbedaan muncul di sini'); p.appendChild(out);
+    const run=()=>{
+      if(!a.value && !b.value){ out.classList.add('empty'); out.textContent='perbedaan muncul di sini'; return; }
+      const A=a.value.split(/\r?\n/), B=b.value.split(/\r?\n/), MAX=1500;
+      if(A.length>MAX||B.length>MAX){ out.classList.remove('empty'); out.textContent='⚠ maksimal '+MAX+' baris per sisi'; return; }
+      const n=A.length, m=B.length, W=m+1, dp=new Int32Array((n+1)*W);
+      for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)
+        dp[i*W+j]=A[i]===B[j]?dp[(i+1)*W+j+1]+1:Math.max(dp[(i+1)*W+j],dp[i*W+j+1]);
+      const ops=[]; let i=0,j=0;
+      while(i<n&&j<m){ if(A[i]===B[j]){ops.push([' ',A[i]]);i++;j++;} else if(dp[(i+1)*W+j]>=dp[i*W+j+1]){ops.push(['-',A[i]]);i++;} else {ops.push(['+',B[j]]);j++;} }
+      while(i<n)ops.push(['-',A[i++]]); while(j<m)ops.push(['+',B[j++]]);
+      const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      let add=0,del=0;
+      const html=ops.map(([t,l])=>{
+        if(t==='+'){add++;return '<span style="color:var(--ok)">+ '+esc(l)+'</span>';}
+        if(t==='-'){del++;return '<span style="color:var(--bad)">− '+esc(l)+'</span>';}
+        return '<span style="color:var(--mut)">&nbsp; '+esc(l)+'</span>'; }).join('\n');
+      out.classList.remove('empty');
+      out.innerHTML=(add||del?'<b style="color:var(--ok)">+'+add+'</b> tambah · <b style="color:var(--bad)">−'+del+'</b> hapus':'✓ kedua teks identik')+'\n\n'+html;
+    };
+    a.oninput=run; b.oninput=run;
+  }});
+
+/* Cron explainer */
+tool({id:'cron',name:'Cron Explainer',ic:'cron',desc:'baca jadwal cron + prediksi',kw:'cron crontab jadwal schedule linux expression parser',
+  build(p){
+    p.appendChild(el('label',{},'Ekspresi cron (menit jam tanggal bulan hari)'));
+    const inp=el('input',{type:'text',value:'*/15 2 * * 1-5',autocomplete:'off',spellcheck:'false'}); p.appendChild(inp);
+    const out=el('div',{class:'out empty'},'penjelasan muncul di sini'); p.appendChild(out);
+    const NAMES={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12,sun:0,mon:1,tue:2,wed:3,thu:4,fri:5,sat:6};
+    function parseField(f,min,max){
+      const set=new Set();
+      for(const part of f.split(',')){
+        if(!part)return null;
+        const m=part.match(/^(.+?)\/(\d+)$/); const step=m?+m[2]:1;
+        let range=(m?m[1]:part).toLowerCase().replace(/[a-z]{3}/g,x=>NAMES[x]!==undefined?NAMES[x]:x);
+        let lo,hi;
+        if(range==='*'){ lo=min; hi=max; }
+        else{ const r=String(range).match(/^(\d+)(?:-(\d+))?$/); if(!r)return null; lo=+r[1]; hi=r[2]!==undefined?+r[2]:(m?max:+r[1]); }
+        if(step<1||lo<min||hi>max||lo>hi)return null;
+        for(let v=lo;v<=hi;v+=step)set.add(v);
+      }
+      return set;
+    }
+    const run=()=>{
+      const raw=inp.value.trim();
+      if(!raw){ setOut(out,'penjelasan muncul di sini',true); return; }
+      const f=raw.split(/\s+/);
+      if(f.length!==5){ setOut(out,'⚠ butuh 5 kolom: menit jam tanggal bulan hari-minggu\ncontoh: */15 2 * * 1-5'); return; }
+      const sMin=parseField(f[0],0,59), sHr=parseField(f[1],0,23), sDom=parseField(f[2],1,31), sMon=parseField(f[3],1,12), sDowRaw=parseField(f[4],0,7);
+      if(!sMin||!sHr||!sDom||!sMon||!sDowRaw){ setOut(out,'⚠ ada kolom yang tidak valid'); return; }
+      const sDow=new Set([...sDowRaw].map(v=>v===7?0:v));
+      const domAny=f[2]==='*', dowAny=f[4]==='*';
+      const DAY=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+      const MON=['','Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      const list=(s,map)=>[...s].sort((x,y)=>x-y).map(map||(x=>x)).join(', ');
+      const lines=[
+        'Menit   : '+(f[0]==='*'?'setiap menit':list(sMin)),
+        'Jam     : '+(f[1]==='*'?'setiap jam':list(sHr)),
+        'Tanggal : '+(domAny?'setiap tanggal':list(sDom)),
+        'Bulan   : '+(f[3]==='*'?'setiap bulan':list(sMon,x=>MON[x])),
+        'Hari    : '+(dowAny?'setiap hari':list(sDow,x=>DAY[x]))+
+        (!domAny&&!dowAny?'\n(tanggal & hari dua-duanya diisi → cron pakai ATAU)':'')
+      ];
+      const t=new Date(); t.setSeconds(0,0); const runs=[];
+      for(let k=0;k<527040&&runs.length<5;k++){
+        t.setMinutes(t.getMinutes()+1);
+        if(!sMin.has(t.getMinutes())||!sHr.has(t.getHours())||!sMon.has(t.getMonth()+1))continue;
+        const okDom=sDom.has(t.getDate()), okDow=sDow.has(t.getDay());
+        if((domAny&&dowAny)||(domAny?okDow:(dowAny?okDom:(okDom||okDow))))
+          runs.push(DAY[t.getDay()]+', '+t.toLocaleString());
+      }
+      setOut(out, lines.join('\n')+'\n\n== 5 JADWAL BERIKUTNYA ==\n'+(runs.length?runs.join('\n'):'⚠ tidak pernah jalan dalam setahun ke depan'));
+    };
+    inp.oninput=run; run();
+    p.appendChild(el('div',{class:'hint'},'Format crontab Linux 5 kolom. Mendukung * , - / dan nama (mon-sun, jan-dec). Prediksi pakai jam lokal perangkat ini.'));
+  }});
+
+/* Vigenère / ROT47 */
+tool({id:'vigenere',name:'Vigenère / ROT47',ic:'vigenere',desc:'sandi klasik berkunci',kw:'vigenere rot47 cipher sandi klasik kunci enkripsi dekripsi ctf',
+  build(p){
+    p.appendChild(el('label',{},'Teks')); const ta=el('textarea',{placeholder:'teks…'}); p.appendChild(ta);
+    p.appendChild(el('label',{},'Mode')); const sel=el('select'); ['Vigenère','ROT47'].forEach(x=>sel.appendChild(el('option',{},x))); p.appendChild(sel);
+    p.appendChild(el('label',{},'Kunci (huruf — hanya untuk Vigenère)')); const key=el('input',{type:'text',placeholder:'mis. DIMS',autocomplete:'off'}); p.appendChild(key);
+    const row=el('div',{class:'row'}); const bE=el('button',{class:'btn solid'},'Enkripsi'),bD=el('button',{class:'btn'},'Dekripsi'); row.append(bE,bD); p.appendChild(row);
+    const out=el('div',{class:'out empty'},'hasil'); p.appendChild(out);
+    const vig=(s,k,d)=>{ k=k.toUpperCase().replace(/[^A-Z]/g,''); if(!k)return null; let ki=0;
+      return s.replace(/[a-z]/gi,c=>{ const base=c<='Z'?65:97; const shift=(k.charCodeAt(ki++%k.length)-65)*d;
+        return String.fromCharCode(((c.charCodeAt(0)-base+shift)%26+26)%26+base); }); };
+    const r47=s=>s.replace(/[!-~]/g,c=>String.fromCharCode(33+((c.charCodeAt(0)-33+47)%94)));
+    const go=d=>{
+      if(sel.selectedIndex===1){ setOut(out, r47(ta.value)||'hasil', !ta.value); return; }
+      const r=vig(ta.value,key.value,d);
+      if(r===null){ setOut(out,'⚠ isi kunci (huruf A-Z) dulu'); return; }
+      setOut(out, r||'hasil', !ta.value);
+    };
+    bE.onclick=()=>go(1); bD.onclick=()=>go(-1);
+    p.appendChild(el('div',{class:'hint'},'Vigenère = Caesar berkunci: tiap huruf digeser sesuai huruf kunci yang berulang. ROT47: geser 47 di semua karakter ASCII cetak (enkripsi = dekripsi). Sandi klasik buat belajar/CTF — bukan pengaman data sungguhan.'));
   }});
 
 /* ---------- render ---------- */
